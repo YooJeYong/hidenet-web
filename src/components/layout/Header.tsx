@@ -75,13 +75,13 @@ export default function Header() {
                 <div className="flex items-center gap-2 md:gap-5 text-[0.5625rem] md:text-[0.6875rem] text-[var(--text-dim)] shrink-0">
                     <span className="hidden md:inline">UPTIME: <span className="text-[var(--green)]">{formatUptime(uptime)}</span></span>
                     <span className="hidden md:inline">NODES: <span className="text-[var(--green)]">1,337</span></span>
-                    <button
-                        type="button"
+                    <Link
+                        href="/login"
                         aria-label="Connect to network"
-                        className="px-1.5 md:px-2.5 py-0.5 md:py-1 border border-[var(--green)] text-[var(--green)] text-[0.5625rem] md:text-[0.6875rem] cursor-pointer tracking-[1px] [animation:pulse-green_2s_infinite] bg-transparent font-[inherit]"
+                        className="px-1.5 md:px-2.5 py-0.5 md:py-1 border border-[var(--green)] text-[var(--green)] text-[0.5625rem] md:text-[0.6875rem] cursor-pointer tracking-[1px] [animation:pulse-green_2s_infinite] bg-transparent font-[inherit] no-underline"
                     >
                         [CONNECT]
-                    </button>
+                    </Link>
                 </div>
             </div>
         </header>
