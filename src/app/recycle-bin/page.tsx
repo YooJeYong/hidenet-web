@@ -1,4 +1,4 @@
-import { RECYCLE_BIN_POSTS } from "@/constants";
+import { RECYCLE_BIN_POSTS } from "@/mocks/posts";
 import BoardFeed from "@/components/board/BoardFeed";
 
 export default function RecycleBinPage() {

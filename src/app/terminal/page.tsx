@@ -1,4 +1,4 @@
-import { TERMINAL_POSTS } from "@/constants";
+import { TERMINAL_POSTS } from "@/mocks/posts";
 import BoardFeed from "@/components/board/BoardFeed";
 
 export default function TerminalPage() {

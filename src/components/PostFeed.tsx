@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
-import { POSTS, STATUS_STYLE } from "@/constants";
+import { POSTS } from "@/mocks/posts";
+import { STATUS_STYLE } from "@/constants/posts";
 
 export default function PostFeed() {
     const [expanded, setExpanded] = useState<number | null>(null);

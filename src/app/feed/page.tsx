@@ -1,4 +1,4 @@
-import { FEED_POSTS } from "@/constants";
+import { FEED_POSTS } from "@/mocks/posts";
 import BoardFeed from "@/components/board/BoardFeed";
 
 export default function FeedPage() {

@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { LOG_MESSAGES } from "@/constants";
+import { LOG_MESSAGES } from "@/constants/statusbar";
 
 export default function StatusBar() {
     const [logIndex, setLogIndex] = useState(0);

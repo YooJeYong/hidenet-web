@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
-import { STATUS_STYLE } from "@/constants";
-import type { Post } from "@/types";
+import { STATUS_STYLE } from "@/constants/posts";
+import type { Post } from "@/types/post";
 
 interface BoardFeedProps {
   posts: Post[];

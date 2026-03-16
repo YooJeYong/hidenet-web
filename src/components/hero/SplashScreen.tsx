@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { SPLASH_ASCII, LOAD_STEPS } from "@/constants";
+import { SPLASH_ASCII, LOAD_STEPS } from "@/constants/splash";
 
 export default function SplashScreen() {
     const [visible, setVisible] = useState(true);

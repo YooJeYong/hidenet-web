@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState, useCallback } from "react";
-import { ASCII_ART, GLOW_STATES } from "@/constants";
+import { ASCII_ART, GLOW_STATES } from "@/constants/ascii";
 import { GLITCH_CHARS } from "@/constants/ascii";
 import ExecutionCard from "./ExecutionCard";
 import AdBanner from "./AdBanner";
