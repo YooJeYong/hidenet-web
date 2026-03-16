@@ -25,12 +25,13 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className={jetbrainsMono.className}>
+        <a href="#main-content" className="skip-link">Skip to content</a>
         <div className="h-screen flex flex-col bg-[var(--bg)] overflow-hidden">
           <SplashScreen />
           <Header />
           <AsciiHero />
           <div className="flex flex-1 min-h-0">
-            <main className="flex-1 min-h-0 flex flex-col">
+            <main id="main-content" className="flex-1 min-h-0 flex flex-col">
               {children}
             </main>
             <MobileSidebarToggle />

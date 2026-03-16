@@ -12,11 +12,11 @@ export default function Sidebar() {
     }, []);
 
     return (
-        <aside className="w-60 h-full shrink-0 border-l border-[var(--border)] bg-[var(--bg-panel)] flex flex-col min-h-0">
+        <aside className="w-60 h-full shrink-0 border-l border-[var(--border)] bg-[var(--bg-panel)] flex flex-col min-h-0" role="complementary" aria-label="System sidebar">
             {/* 스크롤 영역 */}
             <div className="flex-1 overflow-y-auto min-h-0">
             {/* MY_STATUS */}
-            <div className="px-4 py-3.5 border-b border-[var(--border)]">
+            <div className="px-4 py-3.5 border-b border-[var(--border)]" role="region" aria-label="User status">
                 <div className="text-[0.625rem] tracking-[2px] text-[var(--text-dim)] mb-3">── MY_STATUS ──</div>
                 <div className="flex items-center gap-2 mb-2.5">
                     <div className="w-1.5 h-1.5 rounded-full bg-[var(--green)] shadow-[0_0_6px_var(--green)] shrink-0" />
@@ -59,7 +59,7 @@ export default function Sidebar() {
             </div>
 
             {/* SYS_MONITOR */}
-            <div className="px-4 py-3.5 border-b border-[var(--border)]">
+            <div className="px-4 py-3.5 border-b border-[var(--border)]" role="region" aria-label="System monitor">
                 <div className="text-[0.625rem] tracking-[2px] text-[var(--text-dim)] mb-3">── SYS_MONITOR ──</div>
                 {SYSTEM_STATS.map(({ key, value, bar }) => {
                     const v = tick > 0 ? randomize(bar) : bar;
@@ -70,7 +70,7 @@ export default function Sidebar() {
                                 <span className="text-[var(--text-dim)]">{key}</span>
                                 <span className="font-bold" style={{ color }}>{key.startsWith("NET") ? value : `${v}%`}</span>
                             </div>
-                            <div className="h-[3px] bg-[var(--border)] overflow-hidden">
+                            <div className="h-[3px] bg-[var(--border)] overflow-hidden" role="progressbar" aria-label={key} aria-valuenow={key.startsWith("NET") ? bar : v} aria-valuemin={0} aria-valuemax={100}>
                                 <div
                                     className="h-full transition-[width] duration-[1800ms] ease-in-out"
                                     style={{
@@ -86,12 +86,12 @@ export default function Sidebar() {
             </div>
 
             {/* TRENDING */}
-            <div className="px-4 py-3.5 border-b border-[var(--border)]">
+            <div className="px-4 py-3.5 border-b border-[var(--border)]" role="region" aria-label="Trending threads">
                 <div className="text-[0.625rem] tracking-[2px] text-[var(--text-dim)] mb-2.5">── TRENDING ──</div>
                 {MOCK_TRENDING.map((thread, i) => (
                     <div
                         key={thread.id}
-                        className="flex items-start gap-2 px-1 py-1.5 cursor-pointer mb-0.5 transition-all duration-150 hover:bg-[var(--green-faint)] hover:pl-2"
+                        className="flex items-start gap-2 px-1 py-1.5 mb-0.5 transition-all duration-150 hover:bg-[var(--green-faint)] hover:pl-2"
                     >
                         <span className="text-[0.625rem] text-[var(--text-dim)] pt-0.5 shrink-0">{i + 1}.</span>
                         <div className="flex-1 min-w-0">
@@ -108,7 +108,7 @@ export default function Sidebar() {
             </div>
 
             {/* RECENT_LOG */}
-            <div className="px-4 py-3.5">
+            <div className="px-4 py-3.5" role="log" aria-label="Recent activity log">
                 <div className="text-[0.625rem] tracking-[2px] text-[var(--text-dim)] mb-2.5">── RECENT_LOG ──</div>
                 {MOCK_LOGS.map((log, i) => (
                     <div key={i} className="flex items-start gap-1.5 mb-2 text-[0.6875rem] leading-[1.4]">

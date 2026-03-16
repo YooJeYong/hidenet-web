@@ -28,6 +28,8 @@ export default function BoardFeed({ posts, title, showNewThread = true }: BoardF
             onClick={() => setShowInput(!showInput)}
             className="border border-[var(--border-bright)] text-[var(--green)] px-2 md:px-3.5 py-1 cursor-pointer text-[0.5625rem] md:text-[0.6875rem] font-[inherit] tracking-[1px] transition-all duration-200"
             style={{ background: showInput ? "var(--green-dark)" : "transparent" }}
+            aria-label={showInput ? "Cancel new thread" : "Create new thread"}
+            aria-expanded={showInput}
           >
             {showInput ? "[-]" : "[+]"}<span className="hidden md:inline"> {showInput ? "CANCEL" : "NEW THREAD"}</span>
           </button>
@@ -46,11 +48,15 @@ export default function BoardFeed({ posts, title, showNewThread = true }: BoardF
               value={newPost}
               onChange={e => setNewPost(e.target.value)}
               placeholder="echo '...' >> /dev/community"
+              aria-label="New thread content"
               className="flex-1 bg-transparent border-none border-b border-[var(--border-bright)] text-[var(--green)] font-[inherit] text-[0.75rem] md:text-[0.8125rem] resize-none outline-none min-h-[4rem] md:min-h-[5rem] py-2 caret-[var(--green)] placeholder:text-[var(--text-dim)]"
             />
           </div>
           <div className="flex justify-end mt-2 md:mt-3">
-            <button className="bg-[var(--green)] border-none text-[var(--bg)] px-3 md:px-4 py-1 md:py-1.5 cursor-pointer font-[inherit] text-[0.6875rem] md:text-[0.75rem] tracking-[1px] font-bold">
+            <button
+              aria-label="Submit new thread"
+              className="bg-[var(--green)] border-none text-[var(--bg)] px-3 md:px-4 py-1 md:py-1.5 cursor-pointer font-[inherit] text-[0.6875rem] md:text-[0.75rem] tracking-[1px] font-bold"
+            >
               EXECUTE
             </button>
           </div>
@@ -71,13 +77,13 @@ export default function BoardFeed({ posts, title, showNewThread = true }: BoardF
         <span className="text-center">STATUS</span>
         <span className="text-right">TIMESTAMP</span>
       </div>
-      <div className="md:hidden flex px-3 py-1.5 text-[0.5625rem] text-[var(--text-dim)] tracking-[2px] border-b border-[var(--border)] bg-[rgba(0,255,65,0.02)] shrink-0 justify-between">
+      <div className="md:hidden flex px-3 py-1.5 text-[0.5625rem] text-[var(--text-dim)] tracking-[2px] border-b border-[var(--border)] bg-[rgba(0,255,65,0.02)] shrink-0 justify-between" role="row" aria-label="Table header">
         <span>THREAD</span>
         <span>STATUS</span>
       </div>
 
       {/* 게시글 목록 */}
-      <ul className="flex-1 overflow-y-auto list-none m-0 p-0">
+      <ul className="flex-1 overflow-y-auto list-none m-0 p-0" aria-label={`${title} thread list`}>
         {posts.map((post, idx) => {
           const s = STATUS_STYLE[post.status];
           const isExpanded = expanded === post.id;
@@ -93,6 +99,11 @@ export default function BoardFeed({ posts, title, showNewThread = true }: BoardF
               {/* 데스크탑 레이아웃 */}
               <article
                 onClick={() => setExpanded(isExpanded ? null : post.id)}
+                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setExpanded(isExpanded ? null : post.id); } }}
+                role="button"
+                tabIndex={0}
+                aria-expanded={isExpanded}
+                aria-label={`Thread by ${post.user}: ${post.content.slice(0, 60)}`}
                 className="hidden md:grid px-5 py-3.5 cursor-pointer items-start gap-2 hover:bg-[rgba(0,255,65,0.03)]"
                 style={{ gridTemplateColumns: "60px 1fr 80px 70px 70px 100px" }}
               >
@@ -146,6 +157,11 @@ export default function BoardFeed({ posts, title, showNewThread = true }: BoardF
               {/* 모바일 레이아웃 */}
               <article
                 onClick={() => setExpanded(isExpanded ? null : post.id)}
+                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setExpanded(isExpanded ? null : post.id); } }}
+                role="button"
+                tabIndex={0}
+                aria-expanded={isExpanded}
+                aria-label={`Thread by ${post.user}: ${post.content.slice(0, 60)}`}
                 className="md:hidden px-3 py-3 cursor-pointer hover:bg-[rgba(0,255,65,0.03)]"
               >
                 <div className="flex items-start justify-between gap-2 mb-1.5">
@@ -190,7 +206,7 @@ export default function BoardFeed({ posts, title, showNewThread = true }: BoardF
 
               {/* 리플 영역 — 공통 */}
               {isExpanded && (
-                <div className="pr-3 md:pr-5 pb-3 md:pb-4 pl-3 md:pl-20 [animation:fadeIn_0.2s_ease-out]">
+                <div className="pr-3 md:pr-5 pb-3 md:pb-4 pl-3 md:pl-20 [animation:fadeIn_0.2s_ease-out]" role="region" aria-label="Replies">
                   {/* 기존 리플 목록 */}
                   {post.replyList && post.replyList.length > 0 && (
                     <div className="mb-3">
@@ -228,9 +244,10 @@ export default function BoardFeed({ posts, title, showNewThread = true }: BoardF
                     <input
                       type="text"
                       placeholder="type your response..."
+                      aria-label="Reply content"
                       className="bg-transparent border-none border-b border-[var(--border)] text-[var(--green)] font-[inherit] text-[0.6875rem] md:text-[0.75rem] outline-none py-1 flex-1 md:flex-none md:w-[18.75rem] caret-[var(--green)] placeholder:text-[var(--text-dim)]"
                     />
-                    <button className="bg-transparent border border-[var(--border-bright)] text-[var(--green-dim)] px-2 md:px-2.5 py-0.5 cursor-pointer text-[0.5625rem] md:text-[0.6875rem] font-[inherit] shrink-0">
+                    <button aria-label="Send reply" className="bg-transparent border border-[var(--border-bright)] text-[var(--green-dim)] px-2 md:px-2.5 py-0.5 cursor-pointer text-[0.5625rem] md:text-[0.6875rem] font-[inherit] shrink-0">
                       SEND
                     </button>
                   </div>

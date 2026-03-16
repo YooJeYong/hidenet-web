@@ -305,6 +305,55 @@ body::after {
     }
 }
 
+/* Focus-visible — 키보드 포커스 시 테마에 맞는 아웃라인 표시 */
+button:focus-visible,
+[role="button"]:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+    outline: 1px solid var(--green);
+    outline-offset: -1px;
+    box-shadow: 0 0 6px var(--green-glow);
+}
+
+/* Reduced motion — 모션 감소 설정 사용자용 */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* High contrast — 고대비 설정 사용자용 */
+@media (prefers-contrast: more) {
+    :root {
+        --border: #00ff4160;
+        --border-bright: #00ff41;
+        --text-dim: #00cc33;
+    }
+}
+
+/* Skip-to-content 링크 — 키보드 접근성 */
+.skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 10000;
+    padding: 4px 12px;
+    background: var(--bg);
+    color: var(--green);
+    border: 1px solid var(--green);
+    font-size: 0.75rem;
+}
+.skip-link:focus {
+    left: 8px;
+    top: 8px;
+}
+
 /* Selection */
 ::selection {
     background: var(--green-dark);

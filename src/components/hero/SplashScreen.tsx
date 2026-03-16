@@ -46,6 +46,8 @@ export default function SplashScreen() {
     return (
         <div
             className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[var(--bg)]"
+            role="status"
+            aria-label="Loading HIDENET"
             style={{
                 opacity: fadeOut ? 0 : 1,
                 transition: "opacity 0.5s ease-out",
@@ -54,6 +56,7 @@ export default function SplashScreen() {
             {/* 스캔라인 */}
             <div
                 className="pointer-events-none absolute inset-0"
+                aria-hidden="true"
                 style={{
                     background:
                         "repeating-linear-gradient(0deg, rgba(0,0,0,0.13) 0px, rgba(0,0,0,0.13) 1px, transparent 1px, transparent 3px)",
@@ -63,6 +66,7 @@ export default function SplashScreen() {
             {/* 비네트 */}
             <div
                 className="pointer-events-none absolute inset-0"
+                aria-hidden="true"
                 style={{
                     background:
                         "radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.85) 100%)",
@@ -73,6 +77,8 @@ export default function SplashScreen() {
             <div className="flex flex-col items-center gap-6 md:gap-10 px-4">
                 <pre
                     className="text-[var(--green)] leading-[1.2] tracking-[0] text-center text-[clamp(4px,2.2vw,8px)] md:text-[clamp(6px,1.1vw,14px)]"
+                    aria-label="HIDENET logo"
+                    role="img"
                     style={{
                         textShadow:
                             "0 0 8px var(--green), 0 0 20px var(--green), 0 0 50px var(--green-dim)",
@@ -105,7 +111,7 @@ export default function SplashScreen() {
                             </div>
                         ))}
                     </div>
-                    <div className="w-full h-[2px] bg-[var(--border)] relative overflow-hidden">
+                    <div className="w-full h-[2px] bg-[var(--border)] relative overflow-hidden" role="progressbar" aria-label="Boot progress" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}>
                         <div
                             className="absolute left-0 top-0 h-full bg-[var(--green)]"
                             style={{
