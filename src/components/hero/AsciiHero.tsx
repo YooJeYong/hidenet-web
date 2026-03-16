@@ -1,0 +1,102 @@
+"use client";
+import { useEffect, useRef, useState, useCallback } from "react";
+import { ASCII_ART, GLOW_STATES } from "@/constants";
+import { GLITCH_CHARS } from "@/constants/ascii";
+import ExecutionCard from "./ExecutionCard";
+import AdBanner from "./AdBanner";
+
+export default function AsciiHero() {
+    const [glowIndex, setGlowIndex] = useState(0);
+    const [glitchedArt, setGlitchedArt] = useState(ASCII_ART);
+    const glowTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const glitchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const applyGlitch = useCallback(() => {
+        const chars = ASCII_ART.split("");
+        const glitchCount = Math.floor(Math.random() * 4) + 1;
+        for (let i = 0; i < glitchCount; i++) {
+            const idx = Math.floor(Math.random() * chars.length);
+            if (chars[idx] !== "\n" && chars[idx] !== " ") {
+                chars[idx] =
+                    GLITCH_CHARS[
+                        Math.floor(Math.random() * GLITCH_CHARS.length)
+                    ];
+            }
+        }
+        setGlitchedArt(chars.join(""));
+
+        const restoreDelay = Math.random() * 100 + 50;
+        setTimeout(() => setGlitchedArt(ASCII_ART), restoreDelay);
+    }, []);
+
+    useEffect(() => {
+        const scheduleGlitch = () => {
+            const delay = Math.random() * 3000 + 1500;
+            glitchTimerRef.current = setTimeout(() => {
+                applyGlitch();
+                scheduleGlitch();
+            }, delay);
+        };
+        scheduleGlitch();
+        return () => {
+            if (glitchTimerRef.current) clearTimeout(glitchTimerRef.current);
+        };
+    }, [applyGlitch]);
+
+    useEffect(() => {
+        const delays = [120, 80, 120, 400, 80, 600];
+        const step = (i: number) => {
+            setGlowIndex(i);
+            const next = (i + 1) % GLOW_STATES.length;
+            glowTimerRef.current = setTimeout(
+                () => step(next),
+                delays[i] ?? 300,
+            );
+        };
+        glowTimerRef.current = setTimeout(() => step(0), 500);
+        return () => {
+            if (glowTimerRef.current) clearTimeout(glowTimerRef.current);
+        };
+    }, []);
+
+    return (
+        <div className="px-3 pt-4 pb-4 md:px-6 md:pt-10 md:pb-8 border-b border-[var(--border)] bg-gradient-to-b from-[var(--bg-panel)] to-[var(--bg)] relative">
+            <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-6">
+                <pre
+                    className="text-[var(--green)] leading-[1.2] tracking-[0] shrink-0 text-[8px] md:text-[clamp(6px,1.1vw,14px)] w-full md:w-[53ch]"
+                    style={{
+                        textShadow: GLOW_STATES[glowIndex],
+                    }}
+                >
+                    {glitchedArt}
+                </pre>
+                {/* <div className="flex items-center gap-3 md:gap-6">
+                    <ExecutionCard />
+                    <div className="hidden md:block flex-1 min-w-0">
+                        <AdBanner />
+                    </div>
+                </div> */}
+            </div>
+
+            <div className="mt-3 md:mt-5 flex flex-wrap gap-2 md:gap-3 items-center [animation:slideIn_0.5s_ease-out]">
+                <span className="text-[10px] md:text-[12px] text-[var(--text-dim)] tracking-[2px] md:tracking-[3px]">
+                    {"// UNDERGROUND COMMUNITY TERMINAL v2.4.1"}
+                </span>
+                <span className="text-[9px] md:text-[11px] px-1.5 md:px-2 py-0.5 border border-[var(--green-dark)] text-[var(--green-dim)] bg-[var(--green-faint)]">
+                    ENCRYPTED
+                </span>
+                <span className="text-[9px] md:text-[11px] px-1.5 md:px-2 py-0.5 border border-[rgba(0,204,255,0.3)] text-[rgba(0,204,255,0.7)] bg-[rgba(0,204,255,0.05)]">
+                    ANONYMOUS
+                </span>
+                <span className="text-[9px] md:text-[11px] px-1.5 md:px-2 py-0.5 border border-[rgba(255,176,0,0.3)] text-[rgba(255,176,0,0.7)] bg-[rgba(255,176,0,0.05)]">
+                    DECENTRALIZED
+                </span>
+            </div>
+
+            {/* 모바일 전용 AdBanner */}
+            {/* <div className="md:hidden mt-3">
+                <AdBanner />
+            </div> */}
+        </div>
+    );
+}

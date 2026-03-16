@@ -1,0 +1,312 @@
+@import "tailwindcss";
+
+:root {
+    --bg: #0a0a0a;
+    --bg-secondary: #0f0f0f;
+    --bg-panel: #111111;
+    --bg-dark: #0d0d0d;
+    --green: #00ff41;
+    --green-dim: #00cc33;
+    --green-dark: #003d0f;
+    --green-bright: #27c93f;
+    --green-glow: rgba(0, 255, 65, 0.15);
+    --green-faint: rgba(0, 255, 65, 0.05);
+    --cyan: #00ccff;
+    --cyan-dim: rgba(0, 204, 255, 0.8);
+    --cyan-faint: rgba(0, 204, 255, 0.6);
+    --amber: #ffb000;
+    --red: #ff3333;
+    --mac-red: #ff5f56;
+    --mac-yellow: #ffbd2e;
+    --mac-green: #27c93f;
+    --text-primary: #00ff41;
+    --text-secondary: #00cc33;
+    --text-dim: #11af31;
+    --border: #00ff4130;
+    --border-bright: #00ff4160;
+    --scanline: rgba(0, 0, 0, 0.15);
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* Tailwind preflight resets button/input fonts — restore inherited */
+button,
+input,
+textarea,
+select {
+    font-family: inherit;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: var(--bg);
+    color: var(--text-primary);
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* Vignette */
+body::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(
+        ellipse at center,
+        transparent 60%,
+        rgba(0, 0, 0, 0.7) 100%
+    );
+    pointer-events: none;
+    z-index: 9998;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+::-webkit-scrollbar-track {
+    background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--green-dark);
+    border-radius: 0;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--green-dim);
+}
+
+/* Text glow effect */
+.glow {
+    text-shadow:
+        0 0 8px var(--green),
+        0 0 20px var(--green-dim);
+}
+
+.glow-strong {
+    text-shadow:
+        0 0 5px var(--green),
+        0 0 15px var(--green),
+        0 0 35px var(--green-dim);
+}
+
+/* Blinking cursor */
+@keyframes blink {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+}
+
+.cursor::after {
+    content: "▋";
+    animation: blink 1s step-end infinite;
+    color: var(--green);
+}
+
+/* Typing animation */
+@keyframes typing {
+    from {
+        width: 0;
+    }
+    to {
+        width: 100%;
+    }
+}
+
+/* Flicker animation */
+@keyframes flicker {
+    0%,
+    19.999%,
+    22%,
+    62.999%,
+    64%,
+    64.999%,
+    70%,
+    100% {
+        opacity: 1;
+    }
+    20%,
+    21.999%,
+    63%,
+    63.999%,
+    65%,
+    69.999% {
+        opacity: 0.4;
+    }
+}
+
+/* Scan animation */
+@keyframes scan {
+    0% {
+        transform: translateY(-100%);
+    }
+    100% {
+        transform: translateY(100vh);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes pulse-green {
+    0%,
+    100% {
+        box-shadow: 0 0 5px var(--green-glow);
+    }
+    50% {
+        box-shadow:
+            0 0 20px var(--green-glow),
+            0 0 40px rgba(0, 255, 65, 0.1);
+    }
+}
+
+@keyframes neon-flicker {
+    0% {
+        text-shadow:
+            0 0 7px #00ff41,
+            0 0 15px #00ff41,
+            0 0 30px #00ff41,
+            0 0 60px #00cc33,
+            0 0 100px #00cc33;
+        opacity: 1;
+    }
+    3% {
+        text-shadow: none;
+        opacity: 0.7;
+    }
+    6% {
+        text-shadow:
+            0 0 7px #00ff41,
+            0 0 15px #00ff41,
+            0 0 30px #00ff41,
+            0 0 60px #00cc33,
+            0 0 100px #00cc33;
+        opacity: 1;
+    }
+    50% {
+        text-shadow:
+            0 0 7px #00ff41,
+            0 0 20px #00ff41,
+            0 0 45px #00ff41,
+            0 0 80px #00cc33,
+            0 0 130px #00cc33;
+        opacity: 1;
+    }
+    53% {
+        text-shadow:
+            0 0 4px #00ff41,
+            0 0 10px #00ff41;
+        opacity: 0.85;
+    }
+    55% {
+        text-shadow:
+            0 0 7px #00ff41,
+            0 0 20px #00ff41,
+            0 0 45px #00ff41,
+            0 0 80px #00cc33,
+            0 0 130px #00cc33;
+        opacity: 1;
+    }
+    100% {
+        text-shadow:
+            0 0 7px #00ff41,
+            0 0 15px #00ff41,
+            0 0 30px #00ff41,
+            0 0 60px #00cc33,
+            0 0 100px #00cc33;
+        opacity: 1;
+    }
+}
+
+@keyframes neon-glow-bg {
+    0%,
+    100% {
+        opacity: 0.15;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    50% {
+        opacity: 0.28;
+        transform: translate(-50%, -50%) scale(1.08);
+    }
+}
+
+/* Ad marquee scroll */
+@keyframes marquee {
+    0% {
+        transform: translateX(100%);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+@keyframes neon-border-pulse {
+    0%, 100% {
+        box-shadow:
+            0 0 4px var(--cyan),
+            0 0 12px rgba(0, 204, 255, 0.3),
+            inset 0 0 4px rgba(0, 204, 255, 0.1);
+    }
+    50% {
+        box-shadow:
+            0 0 8px var(--cyan),
+            0 0 24px rgba(0, 204, 255, 0.4),
+            0 0 48px rgba(255, 0, 200, 0.15),
+            inset 0 0 8px rgba(0, 204, 255, 0.15);
+    }
+}
+
+@keyframes ad-glitch {
+    0%, 100% {
+        clip-path: inset(0 0 0 0);
+    }
+    20% {
+        clip-path: inset(20% 0 60% 0);
+    }
+    40% {
+        clip-path: inset(60% 0 10% 0);
+    }
+    60% {
+        clip-path: inset(40% 0 30% 0);
+    }
+    80% {
+        clip-path: inset(10% 0 70% 0);
+    }
+}
+
+/* Selection */
+::selection {
+    background: var(--green-dark);
+    color: var(--green);
+}
