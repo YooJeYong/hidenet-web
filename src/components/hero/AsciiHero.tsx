@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { ASCII_ART, GLOW_STATES, GLITCH_CHARS } from "@/constants/ascii";
 
 export default function AsciiHero() {
@@ -7,42 +8,62 @@ export default function AsciiHero() {
     const [glitchedArt, setGlitchedArt] = useState(ASCII_ART);
     const glowTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const glitchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-    const applyGlitch = useCallback(() => {
-        const chars = ASCII_ART.split("");
-        const glitchCount = Math.floor(Math.random() * 4) + 1;
-        for (let i = 0; i < glitchCount; i++) {
-            const idx = Math.floor(Math.random() * chars.length);
-            if (chars[idx] !== "\n" && chars[idx] !== " ") {
-                chars[idx] =
-                    GLITCH_CHARS[
-                        Math.floor(Math.random() * GLITCH_CHARS.length)
-                    ];
-            }
-        }
-        setGlitchedArt(chars.join(""));
-
-        const restoreDelay = Math.random() * 100 + 50;
-        setTimeout(() => setGlitchedArt(ASCII_ART), restoreDelay);
-    }, []);
+    const restoreTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const mountedRef = useRef(true);
 
     useEffect(() => {
+        mountedRef.current = true;
+
+        const applyGlitch = () => {
+            const chars = ASCII_ART.split("");
+            const glitchCount = Math.floor(Math.random() * 4) + 1;
+            for (let i = 0; i < glitchCount; i++) {
+                const idx = Math.floor(Math.random() * chars.length);
+                if (chars[idx] !== "\n" && chars[idx] !== " ") {
+                    chars[idx] =
+                        GLITCH_CHARS[
+                            Math.floor(Math.random() * GLITCH_CHARS.length)
+                        ];
+                }
+            }
+            if (!mountedRef.current) return;
+            setGlitchedArt(chars.join(""));
+
+            const restoreDelay = Math.random() * 100 + 50;
+            if (restoreTimerRef.current) clearTimeout(restoreTimerRef.current);
+            restoreTimerRef.current = setTimeout(() => {
+                if (mountedRef.current) setGlitchedArt(ASCII_ART);
+            }, restoreDelay);
+        };
+
         const scheduleGlitch = () => {
             const delay = Math.random() * 3000 + 1500;
+            if (glitchTimerRef.current) clearTimeout(glitchTimerRef.current);
             glitchTimerRef.current = setTimeout(() => {
+                if (!mountedRef.current) return;
                 applyGlitch();
                 scheduleGlitch();
             }, delay);
         };
         scheduleGlitch();
+
         return () => {
-            if (glitchTimerRef.current) clearTimeout(glitchTimerRef.current);
+            mountedRef.current = false;
+            if (glitchTimerRef.current) {
+                clearTimeout(glitchTimerRef.current);
+                glitchTimerRef.current = null;
+            }
+            if (restoreTimerRef.current) {
+                clearTimeout(restoreTimerRef.current);
+                restoreTimerRef.current = null;
+            }
         };
-    }, [applyGlitch]);
+    }, []);
 
     useEffect(() => {
         const delays = [120, 80, 120, 400, 80, 600];
         const step = (i: number) => {
+            if (!mountedRef.current) return;
             setGlowIndex(i);
             const next = (i + 1) % GLOW_STATES.length;
             glowTimerRef.current = setTimeout(
@@ -59,16 +80,18 @@ export default function AsciiHero() {
     return (
         <div className="px-3 pt-4 pb-4 md:px-6 md:pt-10 md:pb-8 border-b border-[var(--border)] bg-gradient-to-b from-[var(--bg-panel)] to-[var(--bg)] relative" role="banner" aria-label="HIDENET hero section">
             <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-6">
-                <pre
-                    className="text-[var(--green)] leading-[1.2] tracking-[0] shrink-0 text-[8px] md:text-[clamp(6px,1.1vw,14px)] w-full md:w-[53ch]"
-                    role="img"
-                    aria-label="HIDENET ASCII art logo"
-                    style={{
-                        textShadow: GLOW_STATES[glowIndex],
-                    }}
-                >
-                    {glitchedArt}
-                </pre>
+                <Link href="/feed" className="no-underline block">
+                    <pre
+                        className="text-[var(--green)] leading-[1.2] tracking-[0] shrink-0 text-[8px] md:text-[clamp(6px,1.1vw,14px)] w-full md:w-[53ch] cursor-pointer"
+                        role="img"
+                        aria-label="HIDENET ASCII art logo — go to home"
+                        style={{
+                            textShadow: GLOW_STATES[glowIndex],
+                        }}
+                    >
+                        {glitchedArt}
+                    </pre>
+                </Link>
             </div>
 
             <div className="mt-3 md:mt-5 flex flex-wrap gap-2 md:gap-3 items-center [animation:slideIn_0.5s_ease-out]">

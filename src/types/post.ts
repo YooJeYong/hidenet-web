@@ -1,8 +1,7 @@
 export type PostStatus = "active" | "hot" | "new" | "pinned";
 
 export type Reply = {
-  user: string;
-  uid: string;
+  alias: string;
   content: string;
   timestamp: string;
 };
@@ -10,8 +9,7 @@ export type Reply = {
 export type Post = {
   id: number;
   pid: string;
-  user: string;
-  uid: string;
+  alias: string;
   content: string;
   timestamp: string;
   replies: number;

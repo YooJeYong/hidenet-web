@@ -4,10 +4,10 @@ import { SYSTEM_STATS, MOCK_USER, MOCK_TRENDING, MOCK_LOGS } from "@/mocks/sideb
 import { randomize } from "@/utils/random";
 
 export default function Sidebar() {
-    const [tick, setTick] = useState(0);
+    const [, forceUpdate] = useState(0);
 
     useEffect(() => {
-        const id = setInterval(() => setTick(t => t + 1), 2000);
+        const id = setInterval(() => forceUpdate(t => (t + 1) % 1000), 2000);
         return () => clearInterval(id);
     }, []);
 
@@ -20,13 +20,9 @@ export default function Sidebar() {
                 <div className="text-[0.625rem] tracking-[2px] text-[var(--text-dim)] mb-3">── MY_STATUS ──</div>
                 <div className="flex items-center gap-2 mb-2.5">
                     <div className="w-1.5 h-1.5 rounded-full bg-[var(--green)] shadow-[0_0_6px_var(--green)] shrink-0" />
-                    <span className="text-[0.8125rem] text-[var(--green)]">{MOCK_USER.handle}</span>
+                    <span className="text-[0.8125rem] text-[var(--green)]">{MOCK_USER.alias}</span>
                 </div>
                 <div className="flex flex-col gap-1.5 text-[0.6875rem]">
-                    <div className="flex justify-between">
-                        <span className="text-[var(--text-dim)]">ROLE</span>
-                        <span className="text-[var(--cyan-dim)]">{MOCK_USER.role}</span>
-                    </div>
                     <div className="flex justify-between">
                         <span className="text-[var(--text-dim)]">POINTS</span>
                         <span className="text-[var(--mac-yellow)]">{MOCK_USER.points.toLocaleString()}</span>
@@ -62,7 +58,7 @@ export default function Sidebar() {
             <div className="px-4 py-3.5 border-b border-[var(--border)]" role="region" aria-label="System monitor">
                 <div className="text-[0.625rem] tracking-[2px] text-[var(--text-dim)] mb-3">── SYS_MONITOR ──</div>
                 {SYSTEM_STATS.map(({ key, value, bar }) => {
-                    const v = tick > 0 ? randomize(bar) : bar;
+                    const v = randomize(bar);
                     const color = v > 80 ? "var(--mac-red)" : v > 60 ? "var(--mac-yellow)" : "var(--green)";
                     return (
                         <div key={key} className="mb-2.5">
@@ -114,7 +110,7 @@ export default function Sidebar() {
                     <div key={i} className="flex items-start gap-1.5 mb-2 text-[0.6875rem] leading-[1.4]">
                         <span className="text-[var(--green-dim)] shrink-0">›</span>
                         <div className="min-w-0">
-                            <span className="text-[var(--cyan-dim)]">{log.user}</span>
+                            <span className="text-[var(--cyan-dim)]">{log.alias}</span>
                             <span className="text-[var(--text-dim)]"> {log.action} in </span>
                             <span className="text-[var(--green-dim)]">{log.board}</span>
                             <span className="text-[var(--text-dim)] text-[0.5625rem] ml-1.5">{log.time}</span>

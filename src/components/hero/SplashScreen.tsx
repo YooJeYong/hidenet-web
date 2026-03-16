@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { SPLASH_ASCII, LOAD_STEPS } from "@/constants/splash";
 
 export default function SplashScreen() {
@@ -7,33 +7,45 @@ export default function SplashScreen() {
     const [fadeOut, setFadeOut] = useState(false);
     const [stepIndex, setStepIndex] = useState(0);
     const [progress, setProgress] = useState(0);
+    const mountedRef = useRef(true);
 
     useEffect(() => {
+        mountedRef.current = true;
+        let currentStep = 0;
+        let currentProgress = 0;
+
         // 스텝 타이핑
         const stepTimer = setInterval(() => {
-            setStepIndex((i) => {
-                if (i < LOAD_STEPS.length - 1) return i + 1;
+            if (!mountedRef.current) return;
+            if (currentStep >= LOAD_STEPS.length - 1) {
                 clearInterval(stepTimer);
-                return i;
-            });
+                return;
+            }
+            currentStep += 1;
+            setStepIndex(currentStep);
         }, 320);
 
         // 프로그레스 바
         const progTimer = setInterval(() => {
-            setProgress((p) => {
-                if (p >= 100) {
-                    clearInterval(progTimer);
-                    return 100;
-                }
-                return p + 2;
-            });
+            if (!mountedRef.current) return;
+            if (currentProgress >= 100) {
+                clearInterval(progTimer);
+                return;
+            }
+            currentProgress = Math.min(currentProgress + 2, 100);
+            setProgress(currentProgress);
         }, 28);
 
         // 페이드아웃 후 언마운트
-        const fadeTimer = setTimeout(() => setFadeOut(true), 1700);
-        const hideTimer = setTimeout(() => setVisible(false), 2200);
+        const fadeTimer = setTimeout(() => {
+            if (mountedRef.current) setFadeOut(true);
+        }, 1700);
+        const hideTimer = setTimeout(() => {
+            if (mountedRef.current) setVisible(false);
+        }, 2200);
 
         return () => {
+            mountedRef.current = false;
             clearInterval(stepTimer);
             clearInterval(progTimer);
             clearTimeout(fadeTimer);

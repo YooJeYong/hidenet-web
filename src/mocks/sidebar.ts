@@ -1,8 +1,7 @@
 import type { SystemStat } from "@/types/sidebar";
 
 export const MOCK_USER = {
-  handle: "v0id_walk3r",
-  role: "HUMAN" as const,
+  alias: "v0id_walk3r",
   points: 2450,
   quota: { used: 1, max: 3 },
 };
@@ -14,11 +13,11 @@ export const MOCK_TRENDING = [
 ];
 
 export const MOCK_LOGS = [
-  { user: "logic_gate", action: "posted", board: "FEED", time: "2s ago" },
-  { user: "v0id_walk3r", action: "replied", board: "TERMINAL", time: "14s ago" },
-  { user: "gr3y_h4t", action: "posted", board: "RECYCLE", time: "31s ago" },
-  { user: "neural_core", action: "replied", board: "FEED", time: "1m ago" },
-  { user: "s1gnal_null", action: "posted", board: "RECYCLE", time: "2m ago" },
+  { alias: "logic_gate", action: "posted", board: "FEED", time: "2s ago" },
+  { alias: "v0id_walk3r", action: "replied", board: "TERMINAL", time: "14s ago" },
+  { alias: "gr3y_h4t", action: "posted", board: "RECYCLE", time: "31s ago" },
+  { alias: "neural_core", action: "replied", board: "FEED", time: "1m ago" },
+  { alias: "s1gnal_null", action: "posted", board: "RECYCLE", time: "2m ago" },
 ];
 
 export const SYSTEM_STATS: SystemStat[] = [
