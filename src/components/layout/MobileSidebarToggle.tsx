@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import Sidebar from "@/components/Sidebar";
+import Sidebar from "./Sidebar";
 
 export default function MobileSidebarToggle() {
     const [open, setOpen] = useState(false);
