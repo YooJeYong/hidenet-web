@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import type { Post } from "@/types/post";
-import { createReply } from "@/services/reply";
+import { apiFetch } from "@/lib/api";
+import type { Reply } from "@/types/post";
 
 interface UseReplyReturn {
     posts: Post[];
@@ -29,9 +30,9 @@ export function useReply(initialPosts: Post[]): UseReplyReturn {
 
         setIsSubmitting(true);
         try {
-            const { reply } = await createReply({
-                postId,
-                content: trimmed,
+            const { reply } = await apiFetch<{ reply: Reply }>("/api/replies", {
+                method: "POST",
+                body: JSON.stringify({ postId, content: trimmed }),
             });
 
             if (!mountedRef.current) return;

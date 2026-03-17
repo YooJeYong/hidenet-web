@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { STATUS_STYLE } from "@/constants/posts";
-import { useReply } from "@/hooks/useReply";
+import { useReply } from "../_hooks/useReply";
 import ReplyInput from "./ReplyInput";
 import type { Post, PostStatus } from "@/types/post";
 
