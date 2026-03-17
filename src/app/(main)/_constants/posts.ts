@@ -1,4 +1,4 @@
-import type { PostStatus, StatusStyleEntry } from "@/types/post";
+import type { PostStatus, StatusStyleEntry } from "../_types/post";
 
 export const STATUS_STYLE: Record<PostStatus, StatusStyleEntry> = {
   pinned: { label: "PINNED", color: "#ffbd2e", bg: "rgba(255,189,46,0.1)" },

@@ -1,7 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from "react";
-import type { Post } from "@/types/post";
+import type { Post, Reply } from "../_types/post";
 import { apiFetch } from "@/lib/api";
-import type { Reply } from "@/types/post";
 
 interface UseReplyReturn {
     posts: Post[];

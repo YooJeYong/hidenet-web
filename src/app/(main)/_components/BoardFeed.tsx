@@ -1,9 +1,9 @@
 "use client";
 import { useState } from "react";
-import { STATUS_STYLE } from "@/constants/posts";
+import { STATUS_STYLE } from "../_constants/posts";
 import { useReply } from "../_hooks/useReply";
 import ReplyInput from "./ReplyInput";
-import type { Post, PostStatus } from "@/types/post";
+import type { Post, PostStatus } from "../_types/post";
 
 type StatusFilter = PostStatus | "all";
 
