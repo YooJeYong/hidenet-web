@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { STATUS_STYLE } from "@/constants/posts";
 import { useReply } from "@/hooks/useReply";
-import ReplyInput from "@/components/board/ReplyInput";
+import ReplyInput from "./ReplyInput";
 import type { Post, PostStatus } from "@/types/post";
 
 type StatusFilter = PostStatus | "all";
