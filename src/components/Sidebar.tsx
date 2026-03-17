@@ -1,13 +1,40 @@
 "use client";
-import { useState, useEffect } from "react";
-import { SYSTEM_STATS, MOCK_USER, MOCK_TRENDING, MOCK_LOGS } from "@/mocks/sidebar";
-import { randomize } from "@/utils/random";
+import { useState, useEffect, useRef } from "react";
+import { MOCK_USER, MOCK_TRENDING, MOCK_LOGS } from "@/mocks/sidebar";
+
+const SYS_KEYS = ["CPU", "MEM", "NET_IN", "NET_OUT"] as const;
 
 export default function Sidebar() {
-    const [, forceUpdate] = useState(0);
+    const [stats, setStats] = useState(() => SYS_KEYS.map(() => 0));
+    const targetRef = useRef<number[]>([]);
+    const animatingRef = useRef(false);
 
     useEffect(() => {
-        const id = setInterval(() => forceUpdate(t => (t + 1) % 1000), 2000);
+        if (animatingRef.current) return;
+        animatingRef.current = true;
+
+        const targets = SYS_KEYS.map(() => Math.floor(Math.random() * 60) + 15);
+        targetRef.current = targets;
+
+        const current = SYS_KEYS.map(() => 0);
+        const id = setInterval(() => {
+            let allDone = true;
+            for (let i = 0; i < current.length; i++) {
+                if (current[i] !== targets[i]) {
+                    const diff = targets[i] - current[i];
+                    const step = Math.ceil(Math.abs(diff) * 0.15) || 1;
+                    const noise = Math.floor(Math.random() * 5) - 2;
+                    current[i] = Math.max(0, Math.min(99, current[i] + (diff > 0 ? step : -step) + noise));
+                    if (Math.abs(current[i] - targets[i]) <= 2) {
+                        current[i] = targets[i];
+                    }
+                    allDone = false;
+                }
+            }
+            setStats([...current]);
+            if (allDone) clearInterval(id);
+        }, 60);
+
         return () => clearInterval(id);
     }, []);
 
@@ -57,20 +84,20 @@ export default function Sidebar() {
             {/* SYS_MONITOR */}
             <div className="px-4 py-3.5 border-b border-[var(--border)]" role="region" aria-label="System monitor">
                 <div className="text-[0.625rem] tracking-[2px] text-[var(--text-dim)] mb-3">── SYS_MONITOR ──</div>
-                {SYSTEM_STATS.map(({ key, value, bar }) => {
-                    const v = randomize(bar);
+                {SYS_KEYS.map((key, i) => {
+                    const v = stats[i];
                     const color = v > 80 ? "var(--mac-red)" : v > 60 ? "var(--mac-yellow)" : "var(--green)";
                     return (
                         <div key={key} className="mb-2.5">
                             <div className="flex justify-between text-[0.6875rem] mb-0.5">
                                 <span className="text-[var(--text-dim)]">{key}</span>
-                                <span className="font-bold" style={{ color }}>{key.startsWith("NET") ? value : `${v}%`}</span>
+                                <span className="font-bold" style={{ color }}>{`${v}%`}</span>
                             </div>
-                            <div className="h-[3px] bg-[var(--border)] overflow-hidden" role="progressbar" aria-label={key} aria-valuenow={key.startsWith("NET") ? bar : v} aria-valuemin={0} aria-valuemax={100}>
+                            <div className="h-[3px] bg-[var(--border)] overflow-hidden" role="progressbar" aria-label={key} aria-valuenow={v} aria-valuemin={0} aria-valuemax={100}>
                                 <div
-                                    className="h-full transition-[width] duration-[1800ms] ease-in-out"
+                                    className="h-full"
                                     style={{
-                                        width: `${key.startsWith("NET") ? bar : v}%`,
+                                        width: `${v}%`,
                                         background: color,
                                         boxShadow: `0 0 6px ${color}`,
                                     }}

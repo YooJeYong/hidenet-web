@@ -1,5 +1,3 @@
-import type { SystemStat } from "@/types/sidebar";
-
 export const MOCK_USER = {
   alias: "v0id_walk3r",
   points: 2450,
@@ -20,9 +18,3 @@ export const MOCK_LOGS = [
   { alias: "s1gnal_null", action: "posted", board: "RECYCLE", time: "2m ago" },
 ];
 
-export const SYSTEM_STATS: SystemStat[] = [
-  { key: "CPU", value: "23%", bar: 23 },
-  { key: "MEM", value: "67%", bar: 67 },
-  { key: "NET_IN", value: "4.2 MB/s", bar: 42 },
-  { key: "NET_OUT", value: "1.8 MB/s", bar: 18 },
-];
