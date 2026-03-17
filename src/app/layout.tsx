@@ -4,7 +4,7 @@ import "@/styles/globals.css";
 import Header from "@/components/layout/Header";
 import StatusBar from "@/components/layout/StatusBar";
 import MobileSidebarToggle from "@/components/layout/MobileSidebarToggle";
-import { SplashScreen, AsciiHero } from "@/components/hero/ClientShell";
+import { SplashScreen, AsciiHero } from "@/components/branding/ClientShell";
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
