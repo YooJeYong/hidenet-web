@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { NAV_ITEMS } from "@/constants/navigation";
-import { formatUptime } from "@/utils/format";
+import { formatUptime } from "@/lib/format";
 
 export default function Header() {
     const pathname = usePathname();
