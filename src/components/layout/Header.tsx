@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { NAV_ITEMS } from "@/constants/navigation";
@@ -7,14 +7,16 @@ import { formatUptime } from "@/lib/format";
 
 export default function Header() {
     const pathname = usePathname();
-    const [time, setTime] = useState("");
     const uptimeRef = useRef(0);
+    const timeElRef = useRef<HTMLSpanElement>(null);
     const uptimeElRef = useRef<HTMLSpanElement>(null);
 
     useEffect(() => {
         const tick = () => {
             const now = new Date();
-            setTime(now.toLocaleTimeString("en-US", { hour12: false }));
+            if (timeElRef.current) {
+                timeElRef.current.textContent = now.toLocaleTimeString("en-US", { hour12: false });
+            }
             uptimeRef.current += 1;
             if (uptimeElRef.current) {
                 uptimeElRef.current.textContent = formatUptime(uptimeRef.current);
@@ -44,12 +46,11 @@ export default function Header() {
                     <span className="md:hidden">HIDENET</span>
                 </span>
                 <span
+                    ref={timeElRef}
                     className="text-[0.5625rem] md:text-[0.6875rem] text-[var(--text-dim)]"
                     aria-live="off"
-                    aria-label={`Current time: ${time}`}
-                >
-                    {time}
-                </span>
+                    aria-label="Current time"
+                />
             </div>
 
             {/* 네비게이션 바 */}

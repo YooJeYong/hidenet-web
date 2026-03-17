@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { STATUS_STYLE } from "../_constants/posts";
 import { useReply } from "../_hooks/useReply";
 import ReplyInput from "./ReplyInput";
@@ -27,10 +27,12 @@ export default function BoardFeed({
     const [showInput, setShowInput] = useState(false);
     const [filter, setFilter] = useState<StatusFilter>("all");
 
-    const statusCounts = posts.reduce<Record<string, number>>((acc, p) => {
-        acc[p.status] = (acc[p.status] || 0) + 1;
-        return acc;
-    }, {});
+    const statusCounts = useMemo(() =>
+        posts.reduce<Record<string, number>>((acc, p) => {
+            acc[p.status] = (acc[p.status] || 0) + 1;
+            return acc;
+        }, {}),
+    [posts]);
 
     const filteredPosts =
         filter === "all" ? posts : posts.filter((p) => p.status === filter);
@@ -206,7 +208,6 @@ export default function BoardFeed({
                                     : "transparent",
                             }}
                         >
-                            {/* 데스크탑 레이아웃 */}
                             <article
                                 onClick={() =>
                                     setExpanded(isExpanded ? null : post.id)
@@ -223,24 +224,107 @@ export default function BoardFeed({
                                 tabIndex={0}
                                 aria-expanded={isExpanded}
                                 aria-label={`Thread by ${post.alias}: ${post.content.slice(0, 60)}`}
-                                className="hidden md:grid px-5 py-3.5 cursor-pointer items-start gap-2 hover:bg-[rgba(0,255,65,0.03)]"
-                                style={{
-                                    gridTemplateColumns:
-                                        "60px 1fr 80px 70px 70px 100px",
-                                }}
+                                className="cursor-pointer hover:bg-[rgba(0,255,65,0.03)]"
                             >
-                                <span className="text-[0.6875rem] text-[var(--text-dim)] font-[inherit] pt-0.5">
-                                    {post.pid}
-                                </span>
+                                {/* 데스크탑 레이아웃 */}
+                                <div
+                                    className="hidden md:grid px-5 py-3.5 items-start gap-2"
+                                    style={{
+                                        gridTemplateColumns:
+                                            "60px 1fr 80px 70px 70px 100px",
+                                    }}
+                                >
+                                    <span className="text-[0.6875rem] text-[var(--text-dim)] font-[inherit] pt-0.5">
+                                        {post.pid}
+                                    </span>
 
-                                <div>
-                                    <div className="flex items-center gap-2.5 mb-1">
-                                        <span className="text-[0.6875rem] text-[var(--cyan-dim)]">
-                                            [{post.alias}]
+                                    <div>
+                                        <div className="flex items-center gap-2.5 mb-1">
+                                            <span className="text-[0.6875rem] text-[var(--cyan-dim)]">
+                                                [{post.alias}]
+                                            </span>
+                                        </div>
+                                        <p
+                                            className="text-[0.8125rem] text-[var(--text-primary)] leading-[1.5]"
+                                            style={{
+                                                display: "-webkit-box",
+                                                WebkitLineClamp: isExpanded
+                                                    ? ("unset" as unknown as number)
+                                                    : 2,
+                                                WebkitBoxOrient: "vertical",
+                                                overflow: isExpanded
+                                                    ? "visible"
+                                                    : "hidden",
+                                            }}
+                                        >
+                                            {isExpanded && (
+                                                <span className="text-[var(--green)] mr-2">
+                                                    ▶
+                                                </span>
+                                            )}
+                                            {post.content}
+                                        </p>
+                                        {isExpanded && (
+                                            <div className="mt-2.5 flex gap-1.5 flex-wrap">
+                                                {post.tags.map((tag) => (
+                                                    <span
+                                                        key={tag}
+                                                        className="text-[0.625rem] px-2 py-0.5 border border-[var(--border)] text-[var(--text-dim)] tracking-[1px]"
+                                                    >
+                                                        #{tag}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <span className="text-[0.75rem] text-[var(--green-dim)] text-center pt-0.5">
+                                        {post.replies}
+                                    </span>
+                                    <span className="text-[0.75rem] text-[var(--text-dim)] text-center pt-0.5">
+                                        {post.views.toLocaleString()}
+                                    </span>
+                                    <div className="text-center pt-0.5">
+                                        <span
+                                            className="text-[0.625rem] px-1.5 py-0.5 tracking-[1px]"
+                                            style={{
+                                                color: s.color,
+                                                background: s.bg,
+                                                border: `1px solid ${s.color}40`,
+                                            }}
+                                        >
+                                            {s.label}
+                                        </span>
+                                    </div>
+                                    <span className="text-[0.625rem] text-[var(--text-dim)] text-right pt-0.5 leading-[1.4] whitespace-pre-line">
+                                        {post.timestamp.split(" ").join("\n")}
+                                    </span>
+                                </div>
+
+                                {/* 모바일 레이아웃 */}
+                                <div className="md:hidden px-3 py-3">
+                                    <div className="flex items-start justify-between gap-2 mb-1.5">
+                                        <div className="flex items-center gap-1.5 min-w-0">
+                                            <span className="text-[0.625rem] text-[var(--cyan-dim)] shrink-0">
+                                                [{post.alias}]
+                                            </span>
+                                            <span className="text-[0.5rem] text-[var(--text-dim)]">
+                                                {post.pid}
+                                            </span>
+                                        </div>
+                                        <span
+                                            className="text-[0.5rem] px-1 py-px tracking-[1px] shrink-0"
+                                            style={{
+                                                color: s.color,
+                                                background: s.bg,
+                                                border: `1px solid ${s.color}40`,
+                                            }}
+                                        >
+                                            {s.label}
                                         </span>
                                     </div>
                                     <p
-                                        className="text-[0.8125rem] text-[var(--text-primary)] leading-[1.5]"
+                                        className="text-[0.75rem] text-[var(--text-primary)] leading-[1.5]"
                                         style={{
                                             display: "-webkit-box",
                                             WebkitLineClamp: isExpanded
@@ -253,18 +337,27 @@ export default function BoardFeed({
                                         }}
                                     >
                                         {isExpanded && (
-                                            <span className="text-[var(--green)] mr-2">
+                                            <span className="text-[var(--green)] mr-1">
                                                 ▶
                                             </span>
                                         )}
                                         {post.content}
                                     </p>
+                                    <div className="flex items-center gap-3 mt-1.5 text-[0.5rem] text-[var(--text-dim)]">
+                                        <span>↩ {post.replies}</span>
+                                        <span>
+                                            👁 {post.views.toLocaleString()}
+                                        </span>
+                                        <span className="ml-auto">
+                                            {post.timestamp.split(" ")[0]}
+                                        </span>
+                                    </div>
                                     {isExpanded && (
-                                        <div className="mt-2.5 flex gap-1.5 flex-wrap">
+                                        <div className="mt-2 flex gap-1 flex-wrap">
                                             {post.tags.map((tag) => (
                                                 <span
                                                     key={tag}
-                                                    className="text-[0.625rem] px-2 py-0.5 border border-[var(--border)] text-[var(--text-dim)] tracking-[1px]"
+                                                    className="text-[0.5rem] px-1.5 py-px border border-[var(--border)] text-[var(--text-dim)] tracking-[1px]"
                                                 >
                                                     #{tag}
                                                 </span>
@@ -272,110 +365,6 @@ export default function BoardFeed({
                                         </div>
                                     )}
                                 </div>
-
-                                <span className="text-[0.75rem] text-[var(--green-dim)] text-center pt-0.5">
-                                    {post.replies}
-                                </span>
-                                <span className="text-[0.75rem] text-[var(--text-dim)] text-center pt-0.5">
-                                    {post.views.toLocaleString()}
-                                </span>
-                                <div className="text-center pt-0.5">
-                                    <span
-                                        className="text-[0.625rem] px-1.5 py-0.5 tracking-[1px]"
-                                        style={{
-                                            color: s.color,
-                                            background: s.bg,
-                                            border: `1px solid ${s.color}40`,
-                                        }}
-                                    >
-                                        {s.label}
-                                    </span>
-                                </div>
-                                <span className="text-[0.625rem] text-[var(--text-dim)] text-right pt-0.5 leading-[1.4] whitespace-pre-line">
-                                    {post.timestamp.split(" ").join("\n")}
-                                </span>
-                            </article>
-
-                            {/* 모바일 레이아웃 */}
-                            <article
-                                onClick={() =>
-                                    setExpanded(isExpanded ? null : post.id)
-                                }
-                                onKeyDown={(e) => {
-                                    if (e.key === "Enter" || e.key === " ") {
-                                        e.preventDefault();
-                                        setExpanded(
-                                            isExpanded ? null : post.id,
-                                        );
-                                    }
-                                }}
-                                role="button"
-                                tabIndex={0}
-                                aria-expanded={isExpanded}
-                                aria-label={`Thread by ${post.alias}: ${post.content.slice(0, 60)}`}
-                                className="md:hidden px-3 py-3 cursor-pointer hover:bg-[rgba(0,255,65,0.03)]"
-                            >
-                                <div className="flex items-start justify-between gap-2 mb-1.5">
-                                    <div className="flex items-center gap-1.5 min-w-0">
-                                        <span className="text-[0.625rem] text-[var(--cyan-dim)] shrink-0">
-                                            [{post.alias}]
-                                        </span>
-                                        <span className="text-[0.5rem] text-[var(--text-dim)]">
-                                            {post.pid}
-                                        </span>
-                                    </div>
-                                    <span
-                                        className="text-[0.5rem] px-1 py-px tracking-[1px] shrink-0"
-                                        style={{
-                                            color: s.color,
-                                            background: s.bg,
-                                            border: `1px solid ${s.color}40`,
-                                        }}
-                                    >
-                                        {s.label}
-                                    </span>
-                                </div>
-                                <p
-                                    className="text-[0.75rem] text-[var(--text-primary)] leading-[1.5]"
-                                    style={{
-                                        display: "-webkit-box",
-                                        WebkitLineClamp: isExpanded
-                                            ? ("unset" as unknown as number)
-                                            : 2,
-                                        WebkitBoxOrient: "vertical",
-                                        overflow: isExpanded
-                                            ? "visible"
-                                            : "hidden",
-                                    }}
-                                >
-                                    {isExpanded && (
-                                        <span className="text-[var(--green)] mr-1">
-                                            ▶
-                                        </span>
-                                    )}
-                                    {post.content}
-                                </p>
-                                <div className="flex items-center gap-3 mt-1.5 text-[0.5rem] text-[var(--text-dim)]">
-                                    <span>↩ {post.replies}</span>
-                                    <span>
-                                        👁 {post.views.toLocaleString()}
-                                    </span>
-                                    <span className="ml-auto">
-                                        {post.timestamp.split(" ")[0]}
-                                    </span>
-                                </div>
-                                {isExpanded && (
-                                    <div className="mt-2 flex gap-1 flex-wrap">
-                                        {post.tags.map((tag) => (
-                                            <span
-                                                key={tag}
-                                                className="text-[0.5rem] px-1.5 py-px border border-[var(--border)] text-[var(--text-dim)] tracking-[1px]"
-                                            >
-                                                #{tag}
-                                            </span>
-                                        ))}
-                                    </div>
-                                )}
                             </article>
 
                             {/* 리플 영역 — 공통 */}

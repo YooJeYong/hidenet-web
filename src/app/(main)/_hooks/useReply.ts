@@ -15,6 +15,11 @@ export function useReply(initialPosts: Post[]): UseReplyReturn {
     const [replyText, setReplyText] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const mountedRef = useRef(true);
+    const replyTextRef = useRef(replyText);
+    const isSubmittingRef = useRef(isSubmitting);
+
+    replyTextRef.current = replyText;
+    isSubmittingRef.current = isSubmitting;
 
     useEffect(() => {
         mountedRef.current = true;
@@ -24,8 +29,8 @@ export function useReply(initialPosts: Post[]): UseReplyReturn {
     }, []);
 
     const submitReply = useCallback(async (postId: number) => {
-        const trimmed = replyText.trim();
-        if (!trimmed || isSubmitting) return;
+        const trimmed = replyTextRef.current.trim();
+        if (!trimmed || isSubmittingRef.current) return;
 
         setIsSubmitting(true);
         try {
@@ -53,7 +58,7 @@ export function useReply(initialPosts: Post[]): UseReplyReturn {
                 setIsSubmitting(false);
             }
         }
-    }, [replyText, isSubmitting]);
+    }, []);
 
     return { posts, replyText, setReplyText, isSubmitting, submitReply };
 }
