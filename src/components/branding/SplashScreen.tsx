@@ -10,6 +10,7 @@ export default function SplashScreen() {
     const mountedRef = useRef(true);
 
     useEffect(() => {
+        document.body.classList.add("hydrated");
         mountedRef.current = true;
         let currentStep = 0;
         let currentProgress = 0;

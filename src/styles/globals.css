@@ -52,6 +52,19 @@ body {
     position: relative;
 }
 
+/* SSR cover — hydration 갭 방지 */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: var(--bg);
+    pointer-events: none;
+}
+body.hydrated::before {
+    display: none;
+}
+
 /* Vignette */
 body::after {
     content: "";

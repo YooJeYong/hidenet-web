@@ -1,5 +1,3 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
-
 function getAccessToken(): string | null {
     if (typeof document === "undefined") return null;
     const match = document.cookie.match(/(?:^|; )accessToken=([^;]*)/);
@@ -15,13 +13,12 @@ export function clearAccessToken(): void {
 }
 
 async function refreshAccessToken(): Promise<boolean> {
-    const res = await fetch(`${API_BASE}/api/auth/refresh`, {
+    const res = await fetch("/api/auth/refresh", {
         method: "POST",
-        credentials: "include",
     });
     if (!res.ok) return false;
-    const { data } = await res.json();
-    setAccessToken(data.token);
+    const { token } = await res.json();
+    setAccessToken(token);
     return true;
 }
 
@@ -36,20 +33,18 @@ export async function apiFetch<T>(
     };
     if (token) headers["Authorization"] = `Bearer ${token}`;
 
-    let res = await fetch(`${API_BASE}${path}`, {
+    let res = await fetch(path, {
         ...init,
         headers,
-        credentials: "include",
     });
 
     if (res.status === 401 && !path.includes("/auth/")) {
         const refreshed = await refreshAccessToken();
         if (refreshed) {
             headers["Authorization"] = `Bearer ${getAccessToken()}`;
-            res = await fetch(`${API_BASE}${path}`, {
+            res = await fetch(path, {
                 ...init,
                 headers,
-                credentials: "include",
             });
         }
     }

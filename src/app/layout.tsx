@@ -5,6 +5,7 @@ import Header from "@/components/layout/Header";
 import StatusBar from "@/components/layout/StatusBar";
 import MobileSidebarToggle from "@/components/layout/MobileSidebarToggle";
 import { SplashScreen, AsciiHero } from "@/components/branding/ClientShell";
+import AuthInit from "@/components/AuthInit";
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
@@ -27,6 +28,7 @@ export default function RootLayout({
       <body className={jetbrainsMono.className}>
         <a href="#main-content" className="skip-link">Skip to content</a>
         <div className="h-screen flex flex-col bg-[var(--bg)] overflow-hidden">
+          <AuthInit />
           <SplashScreen />
           <Header />
           <AsciiHero />

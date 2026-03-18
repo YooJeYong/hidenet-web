@@ -1,10 +1,12 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import { MOCK_USER, MOCK_TRENDING, MOCK_LOGS } from "@/mocks/sidebar";
+import { MOCK_TRENDING, MOCK_LOGS } from "@/mocks/sidebar";
+import { useAuthStore } from "@/store/auth";
 
 const SYS_KEYS = ["CPU", "MEM", "NET_IN", "NET_OUT"] as const;
 
 export default function Sidebar() {
+    const { user } = useAuthStore();
     const [stats, setStats] = useState(() => SYS_KEYS.map(() => 0));
     const targetRef = useRef<number[]>([]);
     const animatingRef = useRef(false);
@@ -45,40 +47,49 @@ export default function Sidebar() {
             {/* MY_STATUS */}
             <div className="px-4 py-3.5 border-b border-[var(--border)]" role="region" aria-label="User status">
                 <div className="text-[0.625rem] tracking-[2px] text-[var(--text-dim)] mb-3">── MY_STATUS ──</div>
-                <div className="flex items-center gap-2 mb-2.5">
-                    <div className="w-1.5 h-1.5 rounded-full bg-[var(--green)] shadow-[0_0_6px_var(--green)] shrink-0" />
-                    <span className="text-[0.8125rem] text-[var(--green)]">{MOCK_USER.alias}</span>
-                </div>
-                <div className="flex flex-col gap-1.5 text-[0.6875rem]">
-                    <div className="flex justify-between">
-                        <span className="text-[var(--text-dim)]">POINTS</span>
-                        <span className="text-[var(--mac-yellow)]">{MOCK_USER.points.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                        <span className="text-[var(--text-dim)]">QUOTA</span>
-                        <div className="flex items-center gap-1.5">
-                            <div className="flex gap-px">
-                                {Array.from({ length: MOCK_USER.quota.max }).map((_, i) => (
-                                    <div
-                                        key={i}
-                                        className="w-2.5 h-1.5"
-                                        style={{
-                                            background: i < MOCK_USER.quota.max - MOCK_USER.quota.used
-                                                ? "var(--green)"
-                                                : "var(--border)",
-                                            boxShadow: i < MOCK_USER.quota.max - MOCK_USER.quota.used
-                                                ? "0 0 4px var(--green)"
-                                                : "none",
-                                        }}
-                                    />
-                                ))}
-                            </div>
-                            <span className="text-[0.625rem] text-[var(--green-dim)]">
-                                {MOCK_USER.quota.max - MOCK_USER.quota.used}/{MOCK_USER.quota.max}
-                            </span>
+                {user ? (
+                    <>
+                        <div className="flex items-center gap-2 mb-2.5">
+                            <div className="w-1.5 h-1.5 rounded-full bg-[var(--green)] shadow-[0_0_6px_var(--green)] shrink-0" />
+                            <span className="text-[0.8125rem] text-[var(--green)]">{user.alias}</span>
                         </div>
+                        <div className="flex flex-col gap-1.5 text-[0.6875rem]">
+                            <div className="flex justify-between">
+                                <span className="text-[var(--text-dim)]">POINTS</span>
+                                <span className="text-[var(--mac-yellow)]">{user.points.toLocaleString()}</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                                <span className="text-[var(--text-dim)]">QUOTA</span>
+                                <div className="flex items-center gap-1.5">
+                                    <div className="flex gap-px">
+                                        {Array.from({ length: user.quota.max }).map((_, i) => (
+                                            <div
+                                                key={i}
+                                                className="w-2.5 h-1.5"
+                                                style={{
+                                                    background: i < user.quota.max - user.quota.used
+                                                        ? "var(--green)"
+                                                        : "var(--border)",
+                                                    boxShadow: i < user.quota.max - user.quota.used
+                                                        ? "0 0 4px var(--green)"
+                                                        : "none",
+                                                }}
+                                            />
+                                        ))}
+                                    </div>
+                                    <span className="text-[0.625rem] text-[var(--green-dim)]">
+                                        {user.quota.max - user.quota.used}/{user.quota.max}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </>
+                ) : (
+                    <div className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-[var(--text-dim)] shrink-0" />
+                        <span className="text-[0.8125rem] text-[var(--text-dim)]">Unknown User...</span>
                     </div>
-                </div>
+                )}
             </div>
 
             {/* SYS_MONITOR */}

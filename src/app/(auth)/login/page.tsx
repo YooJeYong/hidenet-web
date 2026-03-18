@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { apiFetch, setAccessToken } from "@/lib/api";
+import { useAuthStore } from "@/store/auth";
 
 interface LoginResponse {
   token: string;
@@ -11,6 +12,7 @@ interface LoginResponse {
 
 export default function LoginPage() {
   const router = useRouter();
+  const setUser = useAuthStore((s) => s.setUser);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -26,6 +28,7 @@ export default function LoginPage() {
         body: JSON.stringify({ username, password }),
       });
       setAccessToken(res.token);
+      setUser(res.user);
       router.push("/feed");
     } catch {
       setError("LOGIN FAILED: INVALID CREDENTIALS");

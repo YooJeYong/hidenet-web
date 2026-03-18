@@ -1,12 +1,15 @@
 "use client";
 import { useEffect, useRef } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { NAV_ITEMS } from "@/constants/navigation";
 import { formatUptime } from "@/lib/format";
+import { useAuthStore } from "@/store/auth";
 
 export default function Header() {
     const pathname = usePathname();
+    const router = useRouter();
+    const { user, logout } = useAuthStore();
     const uptimeRef = useRef(0);
     const timeElRef = useRef<HTMLSpanElement>(null);
     const uptimeElRef = useRef<HTMLSpanElement>(null);
@@ -110,13 +113,25 @@ export default function Header() {
                         NODES:{" "}
                         <span className="text-[var(--green)]">1,337</span>
                     </span>
-                    <Link
-                        href="/login"
-                        aria-label="Connect to network"
-                        className="px-1.5 md:px-2.5 py-0.5 md:py-1 border border-[var(--green)] text-[var(--green)] text-[0.5625rem] md:text-[0.6875rem] cursor-pointer tracking-[1px] [animation:pulse-green_2s_infinite] bg-transparent font-[inherit] no-underline"
-                    >
-                        [CONNECT]
-                    </Link>
+                    {user ? (
+                        <button
+                            onClick={async () => {
+                                await logout();
+                                router.push("/login");
+                            }}
+                            className="px-1.5 md:px-2.5 py-0.5 md:py-1 border border-[var(--mac-red)] text-[var(--mac-red)] text-[0.5625rem] md:text-[0.6875rem] cursor-pointer tracking-[1px] bg-transparent font-[inherit]"
+                        >
+                            [LOGOUT]
+                        </button>
+                    ) : (
+                        <Link
+                            href="/login"
+                            aria-label="Connect to network"
+                            className="px-1.5 md:px-2.5 py-0.5 md:py-1 border border-[var(--green)] text-[var(--green)] text-[0.5625rem] md:text-[0.6875rem] cursor-pointer tracking-[1px] [animation:pulse-green_2s_infinite] bg-transparent font-[inherit] no-underline"
+                        >
+                            [CONNECT]
+                        </Link>
+                    )}
                 </div>
             </div>
         </header>
