@@ -8,36 +8,48 @@ const SYS_KEYS = ["CPU", "MEM", "NET_IN", "NET_OUT"] as const;
 export default function Sidebar() {
     const { user } = useAuthStore();
     const [stats, setStats] = useState(() => SYS_KEYS.map(() => 0));
-    const targetRef = useRef<number[]>([]);
-    const animatingRef = useRef(false);
 
     useEffect(() => {
-        if (animatingRef.current) return;
-        animatingRef.current = true;
+        let intervalId: ReturnType<typeof setInterval>;
+        let timeoutId: ReturnType<typeof setTimeout>;
+        let mounted = true;
 
-        const targets = SYS_KEYS.map(() => Math.floor(Math.random() * 60) + 15);
-        targetRef.current = targets;
+        const animate = () => {
+            const targets = SYS_KEYS.map(() => Math.floor(Math.random() * 60) + 15);
+            const current = [...stats];
 
-        const current = SYS_KEYS.map(() => 0);
-        const id = setInterval(() => {
-            let allDone = true;
-            for (let i = 0; i < current.length; i++) {
-                if (current[i] !== targets[i]) {
-                    const diff = targets[i] - current[i];
-                    const step = Math.ceil(Math.abs(diff) * 0.15) || 1;
-                    const noise = Math.floor(Math.random() * 5) - 2;
-                    current[i] = Math.max(0, Math.min(99, current[i] + (diff > 0 ? step : -step) + noise));
-                    if (Math.abs(current[i] - targets[i]) <= 2) {
-                        current[i] = targets[i];
+            intervalId = setInterval(() => {
+                if (!mounted) return;
+                let allDone = true;
+                for (let i = 0; i < current.length; i++) {
+                    if (current[i] !== targets[i]) {
+                        const diff = targets[i] - current[i];
+                        const step = Math.ceil(Math.abs(diff) * 0.15) || 1;
+                        const noise = Math.floor(Math.random() * 5) - 2;
+                        current[i] = Math.max(0, Math.min(99, current[i] + (diff > 0 ? step : -step) + noise));
+                        if (Math.abs(current[i] - targets[i]) <= 2) {
+                            current[i] = targets[i];
+                        }
+                        allDone = false;
                     }
-                    allDone = false;
                 }
-            }
-            setStats([...current]);
-            if (allDone) clearInterval(id);
-        }, 60);
+                setStats([...current]);
+                if (allDone) {
+                    clearInterval(intervalId);
+                    timeoutId = setTimeout(() => {
+                        if (mounted) animate();
+                    }, 3000);
+                }
+            }, 60);
+        };
 
-        return () => clearInterval(id);
+        animate();
+
+        return () => {
+            mounted = false;
+            clearInterval(intervalId);
+            clearTimeout(timeoutId);
+        };
     }, []);
 
     return (
