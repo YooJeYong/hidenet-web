@@ -27,12 +27,14 @@ export default function BoardFeed({
     const [showInput, setShowInput] = useState(false);
     const [filter, setFilter] = useState<StatusFilter>("all");
 
-    const statusCounts = useMemo(() =>
-        posts.reduce<Record<string, number>>((acc, p) => {
-            acc[p.status] = (acc[p.status] || 0) + 1;
-            return acc;
-        }, {}),
-    [posts]);
+    const statusCounts = useMemo(
+        () =>
+            posts.reduce<Record<string, number>>((acc, p) => {
+                acc[p.status] = (acc[p.status] || 0) + 1;
+                return acc;
+            }, {}),
+        [posts],
+    );
 
     const filteredPosts =
         filter === "all" ? posts : posts.filter((p) => p.status === filter);
@@ -447,9 +449,9 @@ export default function BoardFeed({
                                             isSubmitting={isSubmitting}
                                         />
                                     ) : (
-                                        <div className="text-[0.625rem] text-[var(--text-dim)] tracking-[1px] py-1 border-t border-[var(--border)] mt-2 pt-2">
-                                            [READ ONLY] 이 게시판에서는
-                                            리플을 작성할 수 없습니다
+                                        <div className="text-[0.625rem] text-[var(--red)] tracking-[1px] py-1 border-t border-[var(--border)] mt-2 pt-2">
+                                            [READ ONLY] 당신은 게시판에서 리플을
+                                            작성할 수 없습니다
                                         </div>
                                     )}
                                 </div>

@@ -14,6 +14,7 @@
     --cyan: #00ccff;
     --cyan-dim: rgba(0, 204, 255, 0.8);
     --cyan-faint: rgba(0, 204, 255, 0.6);
+    --purple: #b342ff;
     --amber: #ffb000;
     --red: #ff3333;
     --mac-red: #ff5f56;
@@ -285,7 +286,8 @@ body::after {
 }
 
 @keyframes neon-border-pulse {
-    0%, 100% {
+    0%,
+    100% {
         box-shadow:
             0 0 4px var(--cyan),
             0 0 12px rgba(0, 204, 255, 0.3),
@@ -301,7 +303,8 @@ body::after {
 }
 
 @keyframes ad-glitch {
-    0%, 100% {
+    0%,
+    100% {
         clip-path: inset(0 0 0 0);
     }
     20% {
