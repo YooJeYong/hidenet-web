@@ -1,20 +1,24 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { apiFetch } from "@/lib/api";
 
 export default function RegisterPage() {
+    const router = useRouter();
     const [username, setUsername] = useState("");
     const [alias, setAlias] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const handleAliasChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const filtered = e.target.value.replace(/[^a-zA-Z0-9_]/g, "");
         setAlias(filtered);
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
 
@@ -32,11 +36,23 @@ export default function RegisterPage() {
             setError("ERROR: PASSWORD MISMATCH");
             return;
         }
+
+        setLoading(true);
+        try {
+            await apiFetch("/api/auth/register", {
+                method: "POST",
+                body: JSON.stringify({ username, alias, password }),
+            });
+            router.push("/login");
+        } catch {
+            setError("REGISTRATION FAILED: USERNAME OR ALIAS ALREADY EXISTS");
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
-        <div className="flex-1 flex items-center justify-center p-4">
-            <div className="w-full max-w-md border border-[var(--border-bright)] bg-[var(--bg-panel)]">
+        <div className="w-full max-w-md border border-[var(--border-bright)] bg-[var(--bg-panel)]">
                 {/* 터미널 타이틀바 */}
                 <div className="flex items-center px-3 py-2 border-b border-[var(--border)] bg-[var(--bg-dark)]">
                     <div className="flex gap-1.5 mr-3" aria-hidden="true">
@@ -171,9 +187,10 @@ export default function RegisterPage() {
                         <div className="flex justify-end mt-2">
                             <button
                                 type="submit"
-                                className="bg-[var(--green)] border-none text-[var(--bg)] px-4 py-1.5 cursor-pointer font-[inherit] text-[0.75rem] tracking-[1px] font-bold"
+                                disabled={loading}
+                                className="bg-[var(--green)] border-none text-[var(--bg)] px-4 py-1.5 cursor-pointer font-[inherit] text-[0.75rem] tracking-[1px] font-bold disabled:opacity-50"
                             >
-                                REQUEST ACCESS
+                                {loading ? "REQUESTING..." : "REQUEST ACCESS"}
                             </button>
                         </div>
                     </form>
@@ -190,6 +207,5 @@ export default function RegisterPage() {
                     </div>
                 </div>
             </div>
-        </div>
     );
 }

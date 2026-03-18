@@ -1,18 +1,41 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { apiFetch, setAccessToken } from "@/lib/api";
+
+interface LoginResponse {
+  token: string;
+  user: { id: number; alias: string; points: number; quota: { used: number; max: number } };
+}
 
 export default function LoginPage() {
+  const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+    setLoading(true);
+    try {
+      const res = await apiFetch<LoginResponse>("/api/auth/login", {
+        method: "POST",
+        body: JSON.stringify({ username, password }),
+      });
+      setAccessToken(res.token);
+      router.push("/feed");
+    } catch {
+      setError("LOGIN FAILED: INVALID CREDENTIALS");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="flex-1 flex items-center justify-center p-4">
-      <div className="w-full max-w-md border border-[var(--border-bright)] bg-[var(--bg-panel)]">
+    <div className="w-full max-w-md border border-[var(--border-bright)] bg-[var(--bg-panel)]">
         {/* 터미널 타이틀바 */}
         <div className="flex items-center px-3 py-2 border-b border-[var(--border)] bg-[var(--bg-dark)]">
           <div className="flex gap-1.5 mr-3" aria-hidden="true">
@@ -68,13 +91,18 @@ export default function LoginPage() {
               />
             </div>
 
+            {error && (
+              <p className="text-[var(--red)] text-[0.6875rem]">{error}</p>
+            )}
+
             {/* Submit */}
             <div className="flex justify-end mt-2">
               <button
                 type="submit"
-                className="bg-[var(--green)] border-none text-[var(--bg)] px-4 py-1.5 cursor-pointer font-[inherit] text-[0.75rem] tracking-[1px] font-bold"
+                disabled={loading}
+                className="bg-[var(--green)] border-none text-[var(--bg)] px-4 py-1.5 cursor-pointer font-[inherit] text-[0.75rem] tracking-[1px] font-bold disabled:opacity-50"
               >
-                AUTHENTICATE
+                {loading ? "AUTHENTICATING..." : "AUTHENTICATE"}
               </button>
             </div>
           </form>
@@ -88,6 +116,5 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
-    </div>
   );
 }
