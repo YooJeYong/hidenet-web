@@ -3,15 +3,15 @@ import type { Post, Reply } from "../_types/post";
 import { apiFetch } from "@/lib/api";
 
 interface UseReplyReturn {
-    posts: Post[];
     replyText: string;
     setReplyText: (text: string) => void;
     isSubmitting: boolean;
     submitReply: (postId: number) => Promise<void>;
 }
 
-export function useReply(initialPosts: Post[]): UseReplyReturn {
-    const [posts, setPosts] = useState<Post[]>(initialPosts);
+export function useReply(
+    setPosts: React.Dispatch<React.SetStateAction<Post[]>>,
+): UseReplyReturn {
     const [replyText, setReplyText] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const mountedRef = useRef(true);
@@ -23,9 +23,7 @@ export function useReply(initialPosts: Post[]): UseReplyReturn {
 
     useEffect(() => {
         mountedRef.current = true;
-        return () => {
-            mountedRef.current = false;
-        };
+        return () => { mountedRef.current = false; };
     }, []);
 
     const submitReply = useCallback(async (postId: number) => {
@@ -47,7 +45,7 @@ export function useReply(initialPosts: Post[]): UseReplyReturn {
                         ? {
                               ...post,
                               replies: post.replies + 1,
-                              replyList: [...(post.replyList ?? []), reply],
+                              replyList: [...post.replyList, reply],
                           }
                         : post,
                 ),
@@ -58,7 +56,7 @@ export function useReply(initialPosts: Post[]): UseReplyReturn {
                 setIsSubmitting(false);
             }
         }
-    }, []);
+    }, [setPosts]);
 
-    return { posts, replyText, setReplyText, isSubmitting, submitReply };
+    return { replyText, setReplyText, isSubmitting, submitReply };
 }

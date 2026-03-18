@@ -7,7 +7,7 @@ import { useAuthStore } from "@/store/auth";
 
 interface LoginResponse {
   token: string;
-  user: { id: number; alias: string; points: number; quota: { used: number; max: number } };
+  user: { id: number; alias: string; points: number; quota: { used: number; max: number }; role: "node" | "operator" | "root"; heat: number };
 }
 
 export default function LoginPage() {

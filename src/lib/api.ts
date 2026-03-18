@@ -49,6 +49,16 @@ export async function apiFetch<T>(
         }
     }
 
-    if (!res.ok) throw new Error(`API ${res.status}`);
+    if (!res.ok) {
+        let serverMessage = "";
+        try {
+            const body = await res.json();
+            serverMessage = body.error || "";
+        } catch {}
+        const err = new Error(`API ${res.status}`);
+        (err as any).status = res.status;
+        (err as any).serverMessage = serverMessage;
+        throw err;
+    }
     return res.json();
 }

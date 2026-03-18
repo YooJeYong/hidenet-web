@@ -1,31 +1,53 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { STATUS_STYLE } from "../_constants/posts";
+import { usePosts } from "../_hooks/usePosts";
 import { useReply } from "../_hooks/useReply";
 import ReplyInput from "./ReplyInput";
-import type { Post, PostStatus } from "../_types/post";
+import type { Post, PostStatus, BoardType } from "../_types/post";
+import { useAuthStore } from "@/store/auth";
 
 type StatusFilter = PostStatus | "all";
 
 interface BoardFeedProps {
-    posts: Post[];
+    board: BoardType;
     title: string;
     showNewThread?: boolean;
     allowReply?: boolean;
 }
 
 export default function BoardFeed({
-    posts: initialPosts,
+    board,
     title,
     showNewThread = true,
     allowReply = false,
 }: BoardFeedProps) {
-    const { posts, replyText, setReplyText, isSubmitting, submitReply } =
-        useReply(initialPosts);
+    const user = useAuthStore((s) => s.user);
+    const {
+        posts: serverPosts,
+        loading,
+        error,
+        createPost,
+        toggleStar,
+        actionError,
+        showWriteError,
+        canWrite,
+    } = usePosts(board);
+
+    const [posts, setPosts] = useState<Post[]>([]);
+
+    useEffect(() => {
+        if (!loading) setPosts(serverPosts);
+    }, [serverPosts, loading]);
+
+    const { replyText, setReplyText, isSubmitting, submitReply } =
+        useReply(setPosts);
+
     const [expanded, setExpanded] = useState<number | null>(null);
     const [newPost, setNewPost] = useState("");
     const [showInput, setShowInput] = useState(false);
     const [filter, setFilter] = useState<StatusFilter>("all");
+    const [isCreating, setIsCreating] = useState(false);
 
     const statusCounts = useMemo(
         () =>
@@ -38,6 +60,40 @@ export default function BoardFeed({
 
     const filteredPosts =
         filter === "all" ? posts : posts.filter((p) => p.status === filter);
+
+    const handleCreatePost = async () => {
+        const trimmed = newPost.trim();
+        if (!trimmed || isCreating) return;
+
+        setIsCreating(true);
+        const ok = await createPost(trimmed);
+        setIsCreating(false);
+
+        if (ok) {
+            setNewPost("");
+            setShowInput(false);
+        }
+    };
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-full">
+                <span className="text-[var(--green)] text-[0.75rem] animate-pulse">
+                    loading {board}...
+                </span>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="flex items-center justify-center h-full">
+                <span className="text-[var(--red,#ff5f56)] text-[0.75rem]">
+                    [ERROR] {error}
+                </span>
+            </div>
+        );
+    }
 
     return (
         <div className="flex flex-col h-full">
@@ -116,7 +172,10 @@ export default function BoardFeed({
 
                 {showNewThread && (
                     <button
-                        onClick={() => setShowInput(!showInput)}
+                        onClick={() => {
+                            if (showWriteError()) return;
+                            setShowInput(!showInput);
+                        }}
                         className="border border-[var(--border-bright)] text-[var(--green)] px-2 md:px-3.5 py-1 cursor-pointer text-[0.5625rem] md:text-[0.6875rem] font-[inherit] tracking-[1px] transition-all duration-200"
                         style={{
                             background: showInput
@@ -139,13 +198,20 @@ export default function BoardFeed({
                 )}
             </header>
 
+            {/* 에러 메시지 (액션 시 표시) */}
+            {actionError && (
+                <p className="px-3 md:px-5 py-1.5 text-[0.75rem] text-[var(--red)] tracking-[1px] border-b border-[var(--border)] bg-[rgba(255,95,86,0.05)] [animation:fadeIn_0.2s_ease-out]">
+                    {actionError}
+                </p>
+            )}
+
             {/* 글쓰기 영역 */}
-            {showInput && (
+            {showInput && canWrite && (
                 <div className="px-3 md:px-5 py-3 md:py-4 border-b border-[var(--border)] bg-[var(--bg-secondary)] [animation:fadeIn_0.2s_ease-out] shrink-0">
                     <div className="flex items-start gap-2 md:gap-3">
                         <span className="text-[var(--green)] text-[0.6875rem] md:text-[0.8125rem] pt-2 shrink-0">
                             <span className="hidden md:inline">
-                                anon@hidenet:~$
+                                {user?.alias ?? "anon"}@hidenet:~$
                             </span>
                             <span className="md:hidden">$</span>
                         </span>
@@ -159,10 +225,12 @@ export default function BoardFeed({
                     </div>
                     <div className="flex justify-end mt-2 md:mt-3">
                         <button
+                            onClick={handleCreatePost}
+                            disabled={isCreating || !newPost.trim()}
                             aria-label="Submit new thread"
-                            className="bg-[var(--green)] border-none text-[var(--bg)] px-3 md:px-4 py-1 md:py-1.5 cursor-pointer font-[inherit] text-[0.6875rem] md:text-[0.75rem] tracking-[1px] font-bold"
+                            className="bg-[var(--green)] border-none text-[var(--bg)] px-3 md:px-4 py-1 md:py-1.5 cursor-pointer font-[inherit] text-[0.6875rem] md:text-[0.75rem] tracking-[1px] font-bold disabled:opacity-30 disabled:cursor-not-allowed"
                         >
-                            EXECUTE
+                            {isCreating ? "SENDING..." : "EXECUTE"}
                         </button>
                     </div>
                 </div>
@@ -171,7 +239,9 @@ export default function BoardFeed({
             {/* 테이블 헤더 — 모바일: THREAD + STATUS만 */}
             <div
                 className="hidden md:grid px-5 py-1.5 gap-2 text-[0.625rem] text-[var(--text-dim)] tracking-[2px] border-b border-[var(--border)] bg-[rgba(0,255,65,0.02)] shrink-0"
-                style={{ gridTemplateColumns: "60px 1fr 80px 70px 70px 100px" }}
+                style={{
+                    gridTemplateColumns: "60px 1fr 80px 70px 70px 60px 100px",
+                }}
                 role="row"
                 aria-label="Table header"
             >
@@ -180,6 +250,7 @@ export default function BoardFeed({
                 <span className="text-center">REPLIES</span>
                 <span className="text-center">VIEWS</span>
                 <span className="text-center">STATUS</span>
+                <span className="text-center">STARS</span>
                 <span className="text-right">TIMESTAMP</span>
             </div>
             <div
@@ -233,7 +304,7 @@ export default function BoardFeed({
                                     className="hidden md:grid px-5 py-3.5 items-start gap-2"
                                     style={{
                                         gridTemplateColumns:
-                                            "60px 1fr 80px 70px 70px 100px",
+                                            "60px 1fr 80px 70px 70px 60px 100px",
                                     }}
                                 >
                                     <span className="text-[0.6875rem] text-[var(--text-dim)] font-[inherit] pt-0.5">
@@ -252,7 +323,7 @@ export default function BoardFeed({
                                                 display: "-webkit-box",
                                                 WebkitLineClamp: isExpanded
                                                     ? ("unset" as unknown as number)
-                                                    : 2,
+                                                    : 1,
                                                 WebkitBoxOrient: "vertical",
                                                 overflow: isExpanded
                                                     ? "visible"
@@ -298,6 +369,23 @@ export default function BoardFeed({
                                             {s.label}
                                         </span>
                                     </div>
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            toggleStar(post.id);
+                                        }}
+                                        className="text-[0.75rem] text-center pt-0.5 bg-transparent border-none cursor-pointer font-[inherit] transition-all duration-150 hover:scale-110"
+                                        style={{
+                                            color: post.starred
+                                                ? "#ffbd2e"
+                                                : "var(--text-dim)",
+                                            textShadow: post.starred
+                                                ? "0 0 6px #ffbd2e"
+                                                : "none",
+                                        }}
+                                    >
+                                        {post.starred ? "★" : "☆"} {post.stars}
+                                    </button>
                                     <span className="text-[0.625rem] text-[var(--text-dim)] text-right pt-0.5 leading-[1.4] whitespace-pre-line">
                                         {post.timestamp.split(" ").join("\n")}
                                     </span>
@@ -331,7 +419,7 @@ export default function BoardFeed({
                                             display: "-webkit-box",
                                             WebkitLineClamp: isExpanded
                                                 ? ("unset" as unknown as number)
-                                                : 2,
+                                                : 1,
                                             WebkitBoxOrient: "vertical",
                                             overflow: isExpanded
                                                 ? "visible"
@@ -350,6 +438,21 @@ export default function BoardFeed({
                                         <span>
                                             👁 {post.views.toLocaleString()}
                                         </span>
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                toggleStar(post.id);
+                                            }}
+                                            className="bg-transparent border-none cursor-pointer font-[inherit] text-[0.5rem] p-0"
+                                            style={{
+                                                color: post.starred
+                                                    ? "#ffbd2e"
+                                                    : "var(--text-dim)",
+                                            }}
+                                        >
+                                            {post.starred ? "★" : "☆"}{" "}
+                                            {post.stars}
+                                        </button>
                                         <span className="ml-auto">
                                             {post.timestamp.split(" ")[0]}
                                         </span>
@@ -380,7 +483,6 @@ export default function BoardFeed({
                                     {post.replyList &&
                                         post.replyList.length > 0 && (
                                             <div className="mb-3">
-                                                {/* 리플 헤더 */}
                                                 <div className="flex items-center gap-2 mb-2 pb-1.5 border-b border-[var(--border)]">
                                                     <span className="text-[0.5625rem] md:text-[0.625rem] text-[var(--green-dim)] tracking-[2px]">
                                                         REPLIES
@@ -395,7 +497,7 @@ export default function BoardFeed({
                                                     {post.replyList.map(
                                                         (reply, ri) => (
                                                             <div
-                                                                key={ri}
+                                                                key={reply.id}
                                                                 className="border-l-2 border-[var(--green-dark)] pl-2.5 md:pl-3 py-2 md:py-2.5 bg-[rgba(0,255,65,0.02)] hover:bg-[rgba(0,255,65,0.05)] transition-colors duration-150"
                                                                 style={{
                                                                     animation: `fadeIn 0.2s ease-out ${ri * 0.08}s both`,
@@ -450,8 +552,9 @@ export default function BoardFeed({
                                         />
                                     ) : (
                                         <div className="text-[0.625rem] text-[var(--red)] tracking-[1px] py-1 border-t border-[var(--border)] mt-2 pt-2">
-                                            [READ ONLY] 당신은 게시판에서 리플을
-                                            작성할 수 없습니다
+                                            1. [ERR::0x00] PERMISSION_DENIED —
+                                            write access revoked. your signal
+                                            was absorbed.
                                         </div>
                                     )}
                                 </div>

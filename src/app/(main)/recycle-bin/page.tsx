@@ -1,6 +1,5 @@
-import { RECYCLE_BIN_POSTS } from "@/mocks/posts";
 import BoardFeed from "../_components/BoardFeed";
 
 export default function RecycleBinPage() {
-  return <BoardFeed posts={RECYCLE_BIN_POSTS} title="RECYCLE_BIN" showNewThread={true} allowReply={true} />;
+  return <BoardFeed board="recycle-bin" title="RECYCLE_BIN" showNewThread={true} allowReply={true} />;
 }

@@ -32,6 +32,11 @@ export default function RegisterPage() {
             return;
         }
 
+        if (password.length < 6) {
+            setError("ERROR: PASSWORD TOO SHORT (MIN 6)");
+            return;
+        }
+
         if (password !== confirmPassword) {
             setError("ERROR: PASSWORD MISMATCH");
             return;
@@ -44,8 +49,17 @@ export default function RegisterPage() {
                 body: JSON.stringify({ username, alias, password }),
             });
             router.push("/login");
-        } catch {
-            setError("REGISTRATION FAILED: USERNAME OR ALIAS ALREADY EXISTS");
+        } catch (err: any) {
+            const status = err?.status;
+            const serverMsg: string = err?.serverMessage || "";
+            const msg =
+                status === 409 ? "USERNAME OR ALIAS ALREADY EXISTS"
+                : status === 429 ? "ALREADY REGISTERED WITHIN 24H"
+                : status === 400 && serverMsg.includes("alias") ? "INVALID ALIAS FORMAT (USE: xxx_xxx)"
+                : status === 400 && serverMsg.includes("비밀번호") ? "PASSWORD TOO SHORT (MIN 6)"
+                : status === 400 ? "MISSING REQUIRED FIELDS"
+                : "UNKNOWN ERROR";
+            setError(`REGISTRATION FAILED: ${msg}`);
         } finally {
             setLoading(false);
         }

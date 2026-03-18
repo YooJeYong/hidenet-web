@@ -321,6 +321,15 @@ body::after {
     }
 }
 
+/* SYS_MONITOR overclock shake */
+@keyframes sysShake {
+    0% { transform: translateY(0); }
+    25% { transform: translateY(-1px); }
+    50% { transform: translateY(1px); }
+    75% { transform: translateY(-1px); }
+    100% { transform: translateY(0); }
+}
+
 /* Focus-visible — 키보드 포커스 시 테마에 맞는 아웃라인 표시 */
 button:focus-visible,
 [role="button"]:focus-visible,

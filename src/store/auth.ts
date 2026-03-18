@@ -2,11 +2,15 @@ import { create } from "zustand";
 import { apiFetch } from "@/lib/api";
 import { clearAccessToken } from "@/lib/api";
 
+type UserRole = "node" | "operator" | "root";
+
 interface User {
     id: number;
     alias: string;
     points: number;
     quota: { used: number; max: number };
+    role: UserRole;
+    heat: number;
 }
 
 interface AuthState {
@@ -15,6 +19,7 @@ interface AuthState {
     setUser: (user: User) => void;
     init: () => Promise<void>;
     logout: () => Promise<void>;
+    decrementQuota: () => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -29,6 +34,19 @@ export const useAuthStore = create<AuthState>((set) => ({
             set({ user: null, loading: false });
         }
     },
+    decrementQuota: () =>
+        set((state) => {
+            if (!state.user) return state;
+            return {
+                user: {
+                    ...state.user,
+                    quota: {
+                        ...state.user.quota,
+                        used: state.user.quota.used + 1,
+                    },
+                },
+            };
+        }),
     logout: async () => {
         try {
             await apiFetch("/api/auth/logout", { method: "POST" });
