@@ -14,7 +14,7 @@ export default function AsciiHero() {
 
         const applyGlitch = () => {
             const chars = ASCII_ART.split("");
-            const glitchCount = Math.floor(Math.random() * 7) + 2;
+            const glitchCount = Math.floor(Math.random() * 13) + 4;
             for (let i = 0; i < glitchCount; i++) {
                 const idx = Math.floor(Math.random() * chars.length);
                 if (chars[idx] !== "\n" && chars[idx] !== " ") {
@@ -27,7 +27,7 @@ export default function AsciiHero() {
             if (!mountedRef.current) return;
             setGlitchedArt(chars.join(""));
 
-            const restoreDelay = Math.random() * 100 + 50;
+            const restoreDelay = 100;
             if (restoreTimerRef.current) clearTimeout(restoreTimerRef.current);
             restoreTimerRef.current = setTimeout(() => {
                 if (mountedRef.current) setGlitchedArt(ASCII_ART);
