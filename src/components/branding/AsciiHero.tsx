@@ -1,12 +1,10 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ASCII_ART, GLOW_STATES, GLITCH_CHARS } from "@/constants/ascii";
+import { ASCII_ART, GLITCH_CHARS } from "@/constants/ascii";
 
 export default function AsciiHero() {
-    const [glowIndex, setGlowIndex] = useState(0);
     const [glitchedArt, setGlitchedArt] = useState(ASCII_ART);
-    const glowTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const glitchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const restoreTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const mountedRef = useRef(true);
@@ -16,7 +14,7 @@ export default function AsciiHero() {
 
         const applyGlitch = () => {
             const chars = ASCII_ART.split("");
-            const glitchCount = Math.floor(Math.random() * 4) + 1;
+            const glitchCount = Math.floor(Math.random() * 7) + 2;
             for (let i = 0; i < glitchCount; i++) {
                 const idx = Math.floor(Math.random() * chars.length);
                 if (chars[idx] !== "\n" && chars[idx] !== " ") {
@@ -60,23 +58,6 @@ export default function AsciiHero() {
         };
     }, []);
 
-    useEffect(() => {
-        const delays = [120, 80, 120, 400, 80, 600];
-        const step = (i: number) => {
-            if (!mountedRef.current) return;
-            setGlowIndex(i);
-            const next = (i + 1) % GLOW_STATES.length;
-            glowTimerRef.current = setTimeout(
-                () => step(next),
-                delays[i] ?? 300,
-            );
-        };
-        glowTimerRef.current = setTimeout(() => step(0), 500);
-        return () => {
-            if (glowTimerRef.current) clearTimeout(glowTimerRef.current);
-        };
-    }, []);
-
     return (
         <div className="px-3 pt-4 pb-4 md:px-6 md:pt-10 md:pb-8 border-b border-[var(--border)] bg-gradient-to-b from-[var(--bg-panel)] to-[var(--bg)] relative" role="banner" aria-label="HIDENET hero section">
             <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-6">
@@ -86,7 +67,8 @@ export default function AsciiHero() {
                         role="img"
                         aria-label="HIDENET ASCII art logo — go to home"
                         style={{
-                            textShadow: GLOW_STATES[glowIndex],
+                            animation: "neon-flicker 3s infinite",
+                            willChange: "text-shadow, opacity",
                         }}
                     >
                         {glitchedArt}

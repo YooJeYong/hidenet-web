@@ -1,12 +1,16 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { SPLASH_ASCII, LOAD_STEPS } from "@/constants/splash";
+import { GLITCH_CHARS } from "@/constants/ascii";
 
 export default function SplashScreen() {
     const [visible, setVisible] = useState(true);
     const [fadeOut, setFadeOut] = useState(false);
     const [stepIndex, setStepIndex] = useState(0);
     const [progress, setProgress] = useState(0);
+    const [glitchedArt, setGlitchedArt] = useState(SPLASH_ASCII);
+    const glitchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const restoreTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const mountedRef = useRef(true);
 
     useEffect(() => {
@@ -14,6 +18,40 @@ export default function SplashScreen() {
         mountedRef.current = true;
         let currentStep = 0;
         let currentProgress = 0;
+
+        // 글리치
+        const applyGlitch = () => {
+            const chars = SPLASH_ASCII.split("");
+            const glitchCount = Math.floor(Math.random() * 7) + 2;
+            for (let i = 0; i < glitchCount; i++) {
+                const idx = Math.floor(Math.random() * chars.length);
+                if (chars[idx] !== "\n" && chars[idx] !== " ") {
+                    chars[idx] =
+                        GLITCH_CHARS[
+                            Math.floor(Math.random() * GLITCH_CHARS.length)
+                        ];
+                }
+            }
+            if (!mountedRef.current) return;
+            setGlitchedArt(chars.join(""));
+
+            const restoreDelay = Math.random() * 100 + 50;
+            if (restoreTimerRef.current) clearTimeout(restoreTimerRef.current);
+            restoreTimerRef.current = setTimeout(() => {
+                if (mountedRef.current) setGlitchedArt(SPLASH_ASCII);
+            }, restoreDelay);
+        };
+
+        const scheduleGlitch = () => {
+            const delay = Math.random() * 3000 + 1500;
+            if (glitchTimerRef.current) clearTimeout(glitchTimerRef.current);
+            glitchTimerRef.current = setTimeout(() => {
+                if (!mountedRef.current) return;
+                applyGlitch();
+                scheduleGlitch();
+            }, delay);
+        };
+        scheduleGlitch();
 
         // 스텝 타이핑
         const stepTimer = setInterval(() => {
@@ -47,6 +85,14 @@ export default function SplashScreen() {
 
         return () => {
             mountedRef.current = false;
+            if (glitchTimerRef.current) {
+                clearTimeout(glitchTimerRef.current);
+                glitchTimerRef.current = null;
+            }
+            if (restoreTimerRef.current) {
+                clearTimeout(restoreTimerRef.current);
+                restoreTimerRef.current = null;
+            }
             clearInterval(stepTimer);
             clearInterval(progTimer);
             clearTimeout(fadeTimer);
@@ -93,12 +139,11 @@ export default function SplashScreen() {
                     aria-label="HIDENET logo"
                     role="img"
                     style={{
-                        textShadow:
-                            "0 0 8px var(--green), 0 0 20px var(--green), 0 0 50px var(--green-dim)",
                         animation: "neon-flicker 3s infinite",
+                        willChange: "text-shadow, opacity",
                     }}
                 >
-                    {SPLASH_ASCII}
+                    {glitchedArt}
                 </pre>
 
                 <div className="flex flex-col items-center gap-3 w-[240px] md:w-[280px]">
