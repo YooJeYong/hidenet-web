@@ -207,58 +207,24 @@ body::after {
 
 @keyframes neon-flicker {
     0% {
-        text-shadow:
-            0 0 7px #00ff41,
-            0 0 15px #00ff41,
-            0 0 30px #00ff41,
-            0 0 60px #00cc33,
-            0 0 100px #00cc33;
         opacity: 1;
     }
     3% {
-        text-shadow: none;
-        opacity: 0.7;
+        opacity: 0.4;
     }
     6% {
-        text-shadow:
-            0 0 7px #00ff41,
-            0 0 15px #00ff41,
-            0 0 30px #00ff41,
-            0 0 60px #00cc33,
-            0 0 100px #00cc33;
         opacity: 1;
     }
     50% {
-        text-shadow:
-            0 0 7px #00ff41,
-            0 0 20px #00ff41,
-            0 0 45px #00ff41,
-            0 0 80px #00cc33,
-            0 0 130px #00cc33;
         opacity: 1;
     }
     53% {
-        text-shadow:
-            0 0 4px #00ff41,
-            0 0 10px #00ff41;
-        opacity: 0.85;
+        opacity: 0.7;
     }
     55% {
-        text-shadow:
-            0 0 7px #00ff41,
-            0 0 20px #00ff41,
-            0 0 45px #00ff41,
-            0 0 80px #00cc33,
-            0 0 130px #00cc33;
         opacity: 1;
     }
     100% {
-        text-shadow:
-            0 0 7px #00ff41,
-            0 0 15px #00ff41,
-            0 0 30px #00ff41,
-            0 0 60px #00cc33,
-            0 0 100px #00cc33;
         opacity: 1;
     }
 }

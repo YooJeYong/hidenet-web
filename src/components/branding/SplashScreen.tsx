@@ -71,9 +71,9 @@ export default function SplashScreen() {
                 clearInterval(progTimer);
                 return;
             }
-            currentProgress = Math.min(currentProgress + 2, 100);
+            currentProgress = Math.min(currentProgress + 4, 100);
             setProgress(currentProgress);
-        }, 28);
+        }, 56);
 
         // 페이드아웃 후 언마운트
         const fadeTimer = setTimeout(() => {
@@ -139,8 +139,10 @@ export default function SplashScreen() {
                     aria-label="HIDENET logo"
                     role="img"
                     style={{
+                        textShadow:
+                            "0 0 7px #00ff41, 0 0 15px #00ff41, 0 0 30px #00ff41, 0 0 60px #00cc33, 0 0 100px #00cc33",
                         animation: "neon-flicker 3s infinite",
-                        willChange: "text-shadow, opacity",
+                        willChange: "opacity",
                     }}
                 >
                     {glitchedArt}

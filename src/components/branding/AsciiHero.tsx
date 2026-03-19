@@ -67,8 +67,10 @@ export default function AsciiHero() {
                         role="img"
                         aria-label="HIDENET ASCII art logo — go to home"
                         style={{
+                            textShadow:
+                                "0 0 7px #00ff41, 0 0 15px #00ff41, 0 0 30px #00ff41, 0 0 60px #00cc33, 0 0 100px #00cc33",
                             animation: "neon-flicker 3s infinite",
-                            willChange: "text-shadow, opacity",
+                            willChange: "opacity",
                         }}
                     >
                         {glitchedArt}
