@@ -6,7 +6,7 @@
     --bg-panel: #111111;
     --bg-dark: #0d0d0d;
     --green: #00ff41;
-    --green-dim: #00cc33;
+    --green-dim: #0fec46;
     --green-dark: #003d0f;
     --green-bright: #27c93f;
     --green-glow: rgba(0, 255, 65, 0.15);
@@ -289,11 +289,21 @@ body::after {
 
 /* SYS_MONITOR overclock shake */
 @keyframes sysShake {
-    0% { transform: translateY(0); }
-    25% { transform: translateY(-1px); }
-    50% { transform: translateY(1px); }
-    75% { transform: translateY(-1px); }
-    100% { transform: translateY(0); }
+    0% {
+        transform: translateY(0);
+    }
+    25% {
+        transform: translateY(-1px);
+    }
+    50% {
+        transform: translateY(1px);
+    }
+    75% {
+        transform: translateY(-1px);
+    }
+    100% {
+        transform: translateY(0);
+    }
 }
 
 /* Focus-visible — 키보드 포커스 시 테마에 맞는 아웃라인 표시 */

@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { STATUS_STYLE } from "../_constants/posts";
 import { usePosts } from "../_hooks/usePosts";
 import { useReply } from "../_hooks/useReply";
@@ -26,6 +26,9 @@ export default function BoardFeed({
     const {
         posts: serverPosts,
         loading,
+        loadingMore,
+        hasMore,
+        loadMore,
         error,
         createPost,
         toggleStar,
@@ -35,10 +38,22 @@ export default function BoardFeed({
     } = usePosts(board);
 
     const [posts, setPosts] = useState<Post[]>([]);
+    const sentinelRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (!loading) setPosts(serverPosts);
     }, [serverPosts, loading]);
+
+    useEffect(() => {
+        const el = sentinelRef.current;
+        if (!el) return;
+        const observer = new IntersectionObserver(
+            (entries) => { if (entries[0].isIntersecting) loadMore(); },
+            { threshold: 0.1 },
+        );
+        observer.observe(el);
+        return () => observer.disconnect();
+    }, [loadMore]);
 
     const { replyText, setReplyText, isSubmitting, submitReply } =
         useReply(setPosts);
@@ -563,6 +578,15 @@ export default function BoardFeed({
                     );
                 })}
             </ul>
+            {hasMore && (
+                <div ref={sentinelRef} className="flex items-center justify-center py-3 shrink-0">
+                    {loadingMore && (
+                        <span className="text-[var(--green)] text-[0.625rem] tracking-[2px] animate-pulse">
+                            LOADING...
+                        </span>
+                    )}
+                </div>
+            )}
         </div>
     );
 }
