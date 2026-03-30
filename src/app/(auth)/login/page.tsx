@@ -29,7 +29,7 @@ export default function LoginPage() {
       });
       setAccessToken(res.token);
       setUser(res.user);
-      router.push("/feed");
+      router.push("/matrix");
     } catch {
       setError("LOGIN FAILED: INVALID CREDENTIALS");
     } finally {

@@ -1,6 +1,6 @@
 export type PostStatus = "normal" | "hot" | "pinned" | "flagged" | "encrypted";
 
-export type BoardType = "feed" | "terminal" | "recycle-bin";
+export type BoardType = "matrix" | "terminal" | "recycle-bin";
 
 export type Reply = {
   id: number;

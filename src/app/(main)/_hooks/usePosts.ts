@@ -66,10 +66,10 @@ export function usePosts(board: BoardType): UsePostsReturn {
             ? !!user
             : board === "terminal"
               ? !!user && quotaRemaining > 0
-              : false; // feed: never
+              : false; // matrix: never
 
     const showWriteError = useCallback((): boolean => {
-        if (board === "feed") return false;
+        if (board === "matrix") return false;
         if (!user) {
             flashError("[AUTH REQUIRED] 로그인이 필요합니다");
             return true;

@@ -61,7 +61,7 @@ export default function AsciiHero() {
     return (
         <div className="px-3 pt-4 pb-4 md:px-6 md:pt-10 md:pb-8 border-b border-[var(--border)] bg-gradient-to-b from-[var(--bg-panel)] to-[var(--bg)] relative" role="banner" aria-label="HIDENET hero section">
             <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-6">
-                <Link href="/feed" className="no-underline block">
+                <Link href="/matrix" className="no-underline block">
                     <pre
                         className="text-[var(--green)] leading-[1.2] tracking-[0] shrink-0 text-[8px] md:text-[clamp(6px,1.1vw,14px)] w-full md:w-[53ch] cursor-pointer"
                         role="img"
